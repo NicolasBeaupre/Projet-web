@@ -1,34 +1,10 @@
-import Image from "next/image";
+import PageEnConstruction from '@/app/ui/construction';
 
 export default function Home() {
   return (
     <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="relative flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 bg-white dark:bg-black sm:items-start">
-        <div className="fixed inset-0">
-          <Image
-            src="/page_en_construction.jpg"
-            fill={true}
-            alt="Page en construction"
-            className="object-cover blur-md"
-            loading="eager"
-          />
-        </div>
-        <div className="absolute flex items-center flex-col">
-          <h1 className="font-bold mb-20 text-4xl">Page en construction</h1>
-            <Image
-              src="/page_en_construction.jpg"
-              width={1200}
-              height={800}
-              alt="Page en construction"
-              className="object-cover w-full h-auto"
-              loading="eager"
-            />
-
-
-        </div>
-
-
-
+      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 bg-white dark:bg-black sm:items-start">
+          <PageEnConstruction />
         {
 
         /* <Image
