@@ -7,6 +7,9 @@ import {
   UserCircleIcon,
 } from '@heroicons/react/24/outline';
 import { Button } from '@/app/ui/button';
+import  QuestionsForm from '@/app/ui/quiz/creer-questions';
+import { ajouterQuestions } from '@/app/lib/actions';
+import { CreerQuestionBtn } from './buttons';
 
 export default function QuizForm() {
   return (
@@ -51,7 +54,6 @@ export default function QuizForm() {
         >
           Annnuler
         </Link>
-        <Button type="submit">Débuter la création</Button>
       </div>
     </form>
   );
