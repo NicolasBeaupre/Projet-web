@@ -19,12 +19,6 @@ import {
     SheetTitle,
 } from "@/components/ui/sheet"
 
-const navLinks = [
-    { href: "/", label: "Home" },
-    { href: "/about", label: "About" },
-    { href: "/services", label: "Services" },
-    { href: "/contact", label: "Contact" },
-]
 
 const NavbarAcceuil = () => {
     const [open, setOpen] = useState(false)
