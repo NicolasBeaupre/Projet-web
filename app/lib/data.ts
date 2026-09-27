@@ -3,9 +3,7 @@ import {
   CustomerField,
   CustomersTableType,
   InvoiceForm,
-  InvoicesTable,
-  LatestInvoiceRaw,
-  Revenue,
+  InvoicesTable
 } from './definitions';
 
 const sql = postgres(process.env.POSTGRES_URL!, { ssl: 'require' });
@@ -18,7 +16,7 @@ export async function fetchRevenue() {
     // console.log('Fetching revenue data...');
     await new Promise((resolve) => setTimeout(resolve, 3000));
 
-    const data = await sql<Revenue[]>`SELECT * FROM revenue`;
+    const data = await sql<[]>`SELECT * FROM revenue`;
 
     // console.log('Data fetch completed after 3 seconds.');
 
@@ -31,7 +29,7 @@ export async function fetchRevenue() {
 
 export async function fetchLatestInvoices() {
   try {
-    const data = await sql<LatestInvoiceRaw[]>`
+    const data = await sql<[]>`
       SELECT invoices.amount, customers.name, customers.image_url, customers.email, invoices.id
       FROM invoices
       JOIN customers ON invoices.customer_id = customers.id
@@ -39,8 +37,8 @@ export async function fetchLatestInvoices() {
       LIMIT 5`;
 
     const latestInvoices = data.map((invoice) => ({
-      ...invoice,
-      amount: invoice.amount
+     
+
     }));
     return latestInvoices;
   } catch (error) {
