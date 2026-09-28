@@ -3,7 +3,8 @@ import {
   PlusIcon,
   TrashIcon,
 } from '@heroicons/react/24/outline';
-import { useForm, useFieldArray } from 'react-hook-form';
+import { useForm, useFieldArray, Controller } from 'react-hook-form';
+import Select from 'react-select';
 
 type Quiz = {
   nomQuiz: string,
@@ -71,14 +72,43 @@ export default function QuizForm() {
               <label className="mb-2 block text-lg font-medium text-black">
                 Choisir la catégorie du quiz
               </label>
-              <select
-                {...register("categorie", { required: "Le quiz doit avoir une catégorie" })}
-                className={`peer block w-full rounded-md border border-gray-200 py-2 pl-10 text-sm outline-gray-200 focus:outline-black text-black
-              placeholder:text-gray-500 ${errors.categorie ? "border-red-500 focus:outline-red-500" : "border-gray-200 focus:outline-black"}`}
+              <Controller
+                control={control}
+                name="categorie"
+                rules={{ required: true }}
+                render={renderProps => {
+                  const { ref, ...rest } = renderProps.field;
+
+                  return (
+                    <Select
+                      options={[{ label: 'Science', value: 'science' }, { label: 'Mathématique', value: 'math' }, { label: 'Géographie', value: 'geo' }]}
+                      menuPlacement="auto"
+                      placeholder="Sélectionnez une catégorie ..."
+                      styles={{
+                        control: (baseStyles, state) => ({
+                          ...baseStyles,
+                          borderColor: state.isFocused ? 'grey' : 'black',
+                          color: 'black'
+                        }),
+                        option: (baseStyles) => ({
+                          ...baseStyles,
+                          color: 'black'
+                        }),
+                      }}
+                      isSearchable={false}
+                      menuPortalTarget={document.body} menuPosition="fixed"
+                      {...register('categorie')}
+                      {...renderProps.field}
+                      onChange={e => {
+                        console.log(e);
+                        renderProps.field.onChange(e);
+                      }}
+
+                    />
+                  );
+                }}
               />
-              {errors.categorie && (
-                <p className='text-red-500 text-sm'>{errors.categorie.message}</p>
-              )}
+
 
             </div>
           </div>
@@ -117,23 +147,23 @@ export default function QuizForm() {
               <div className='rounded-md bg-gray-50 p-4 md:p-6'>
                 <h3 className='text-black'>Réponses</h3>
                 <div className='grid grid-cols-2'>
-                {[1, 2, 3, 4].map((numReponse) => (
-                  <div key={numReponse} className='flex items-center flex-wrap gap-5 m-5 border border-gray-300 border-8 rounded p-3'>
-                    <div className='flex text-black'>
-                      <input type='radio' value={`reponse${numReponse}`} defaultChecked={numReponse==1}
-                        {...register(`questions.${index}.BonneReponse` as any, { required: true })} className='w-5 h-5'/>
-                    </div>
-                    <div className='w-full'>
-                      <input {...register(`questions.${index}.reponse${numReponse}` as any, { required: "Le champ de réponse ne peut pas être vide" })} placeholder={`Réponse ${numReponse}...`}
-                        className={`peer block w-full h-50 rounded-md border border-gray-200 py-2 pl-10 text-sm outline-gray-200 focus:outline-black text-black
+                  {[1, 2, 3, 4].map((numReponse) => (
+                    <div key={numReponse} className='flex items-center flex-wrap gap-5 m-5 border border-gray-300 border-8 rounded p-3'>
+                      <div className='flex text-black'>
+                        <input type='radio' value={`reponse${numReponse}`} defaultChecked={numReponse == 1}
+                          {...register(`questions.${index}.BonneReponse` as any, { required: true })} className='w-5 h-5' />
+                      </div>
+                      <div className='w-full'>
+                        <input {...register(`questions.${index}.reponse${numReponse}` as any, { required: "Le champ de réponse ne peut pas être vide" })} placeholder={`Réponse ${numReponse}...`}
+                          className={`peer block w-full h-50 rounded-md border border-gray-200 py-2 pl-10 text-sm outline-gray-200 focus:outline-black text-black
                   placeholder:text-gray-500 ${(errors.questions?.[index] as any)?.[`reponse${numReponse}`] ? "border-red-500 focus:outline-red-500" : "border-gray-200 focus:outline-black"}`}
-                      />
-                      {(errors.questions?.[index] as any)?.[`reponse${numReponse}`] && (
-                        <p className='text-red-500 text-sm'>{(errors.questions?.[index] as any)?.[`reponse${numReponse}`].message}</p>
-                      )}
+                        />
+                        {(errors.questions?.[index] as any)?.[`reponse${numReponse}`] && (
+                          <p className='text-red-500 text-sm'>{(errors.questions?.[index] as any)?.[`reponse${numReponse}`].message}</p>
+                        )}
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  ))}
                 </div>
 
               </div>
