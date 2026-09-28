@@ -5,11 +5,12 @@ export default function SkeletonCard() {
   return (
     <Card className="w-65 max-w-xs">
       <CardHeader>
-        <Skeleton className="h-4 w-2/3" />
-        <Skeleton className="h-4 w-1/2" />
+        <Skeleton className="aspect-video w-full" />
+
       </CardHeader>
       <CardContent>
-        <Skeleton className="aspect-video w-full" />
+        <Skeleton className="h-4 w-2/3" />
+        <Skeleton className="h-4 w-1/2" />
       </CardContent>
     </Card>
   )
