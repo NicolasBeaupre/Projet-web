@@ -22,7 +22,7 @@ export default function PageEnConstruction() {
                   className="object-cover w-full h-auto rounded"
                   loading="eager"
               />
-
+ 
 
           </div>
       </div>
