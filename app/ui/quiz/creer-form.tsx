@@ -14,6 +14,9 @@ type Quiz = {
     { titre: string, reponse1: string, reponse2: string, reponse3: string, reponse4: string, bonneReponse: string }
   ]
 }
+const categoriesQuiz = [{label:"science", value:"science"},
+  {label:"math", value:"math"},
+  {label:"geo", value:"geo"} ]
 
 export default function QuizForm() {
 
@@ -76,12 +79,9 @@ export default function QuizForm() {
                 control={control}
                 name="categorie"
                 rules={{ required: true }}
-                render={renderProps => {
-                  const { ref, ...rest } = renderProps.field;
-
-                  return (
+                render={({field}) =>(
                     <Select
-                      options={["science","math","geo"]}
+                      options={categoriesQuiz}
                       menuPlacement="auto"
                       placeholder="Sélectionnez une catégorie ..."
                       styles={{
@@ -96,17 +96,16 @@ export default function QuizForm() {
                         }),
                       }}
                       isSearchable={false}
-                      menuPortalTarget={document.body} menuPosition="fixed"
-                      {...register('categorie')}
-                      {...renderProps.field}
-                      onChange={e => {
-                        console.log(e);
-                        renderProps.field.onChange(e);
-                      }}
+
+                      value={categoriesQuiz.find((option) => option.value == field.value)}
+
+                      onChange={(optionSelectionne) =>{field.onChange(optionSelectionne ? optionSelectionne.value : "")}}
+
+                      name={field.name}
 
                     />
-                  );
-                }}
+                )
+                }
               />
 
 
