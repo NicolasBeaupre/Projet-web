@@ -17,28 +17,10 @@ export default function LoginPage() {
     const supabase = createClient()
 
 
-    const { error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        emailRedirectTo: `${window.location.origin}/auth/confirm`,
-      },
-    })
-
-    setLoading(false)
-    if (error) setMessage(error.message)
-    else setDone(true)
-
+  
 
   }
 
-  if (done) {
-    return (
-      <div className="flex flex-col  items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-        <p>Vérifiez votre boîte mail pour confirmer votre inscription.</p>
-      </div>
-    )
-  }
 
   return (
 
