@@ -35,19 +35,24 @@ export default function SignUpPage() {
     }
 
     if (done) {
-        return <p>Vérifiez votre boîte mail pour confirmer votre inscription.</p>
+        return (
+            <div className="flex flex-col flex-1  items-center justify-center bg-zinc-50 font-sans dark:bg-black">
+                <p className='py-20'>Vérifiez votre boîte mail pour confirmer votre inscription.</p>
+            </div>)
     }
 
     return (
-        <div  className="flex flex-col  items-center justify-center bg-zinc-50 font-sans dark:bg-black">
+        <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
+            <h1 className='text-3xl font-bold '>Création d'un compte</h1>
 
-            <form onSubmit={handleSubmit}  className='flex flex-col gap-2 py-20'>
+            <form onSubmit={handleSubmit} className='flex flex-col gap-2 py-20'>
 
                 <input className=' rounded-lg border p-2' placeholder='email' type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
                 <input className='rounded-lg border p-2' placeholder='Mot de passe' type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
                 <input className='rounded-lg border p-2' placeholder='Validation du mot de passe' type="password" value={password2} onChange={(e) => setPassword2(e.target.value)} required />
                 {message && <p className="text-sm text-red-600">{message}</p>}
                 <button disabled={loading} className='rounded-lg bg-primary text-secondary border p-2' type="submit">{loading ? 'Création...' : "S'inscrire"}</button>
+                <a href="/compte/connexion">Déjà un compte?</a>
 
             </form>
         </div>

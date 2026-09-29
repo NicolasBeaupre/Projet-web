@@ -27,7 +27,7 @@ const NavbarAcceuil = () => {
             <nav className="container mx-auto flex h-16  items-center bg-secondary justify-around px-4">
                 
 
-                    <a href="#" className="text-3xl font-bold">
+                    <a href="/" className="text-3xl font-bold">
                         Logo
                     </a>
                     <div className="hidden lg:flex lg:not items-center gap-2">
