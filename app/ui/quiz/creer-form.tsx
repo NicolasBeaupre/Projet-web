@@ -5,6 +5,7 @@ import {
 } from '@heroicons/react/24/outline';
 import { useForm, useFieldArray, Controller } from 'react-hook-form';
 import Select from 'react-select';
+import ajouterQuiz from '@/app/lib/action';
 
 type Quiz = {
   nomQuiz: string,
@@ -35,8 +36,8 @@ export default function QuizForm() {
     control,
     name: 'questions',
   })
-  const onSubmit = (data: Quiz) => {
-    console.log("Données Quiz", data)
+  const onSubmit = async (data: any) => {
+    await ajouterQuiz(data);
   }
   return (
     <div>
@@ -81,6 +82,7 @@ export default function QuizForm() {
                 rules={{ required: true }}
                 render={({field}) =>(
                     <Select
+                    instanceId={"quiz"}
                       options={categoriesQuiz}
                       menuPlacement="auto"
                       placeholder="Sélectionnez une catégorie ..."
