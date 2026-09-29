@@ -81,7 +81,7 @@ export default function QuizForm() {
 
                   return (
                     <Select
-                      options={[{ label: 'Science', value: 'science' }, { label: 'Mathématique', value: 'math' }, { label: 'Géographie', value: 'geo' }]}
+                      options={["science","math","geo"]}
                       menuPlacement="auto"
                       placeholder="Sélectionnez une catégorie ..."
                       styles={{
