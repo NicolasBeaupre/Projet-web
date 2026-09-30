@@ -25,17 +25,17 @@ const NavbarAcceuil = () => {
 
         <header className="sticky flex justify-center top-0 z-50 w-full border-b bg-secondary backdrop-blur supports-[backdrop-filter]:bg-secondary">
             <nav className="container mx-auto flex h-16  items-center bg-secondary justify-around px-4">
-                
+
 
                     <a href="#" className="text-3xl font-bold">
-                        Logo
+                        Quiztro
                     </a>
                     <div className="hidden lg:flex lg:not items-center gap-2">
 
                         <Button className="h-8 text-xl" ><Plus /> Créer</Button>
 
                     </div>
-            
+
                 {/* pc nav */}
                 <div className="hidden md:flex items-center gap-2">
                     <Field orientation="horizontal" className="w-100 ">
@@ -53,12 +53,12 @@ const NavbarAcceuil = () => {
                 {/* Mobile hamburger */}
                 <Sheet open={open} onOpenChange={setOpen}>
                     <SheetTrigger  render={<Button variant="ghost"  className="md:hidden" />}>
-                        
+
                             <Menu className="size-8" />
-                           
-                     
+
+
                     </SheetTrigger>
-                    
+
                     <SheetContent side="right" className=" pl-3">
                         <SheetTitle className="text-left pt-3 text-2xl">Logo</SheetTitle>
                         <nav className="mt-6 flex flex-col gap-4 justify-between h-full">

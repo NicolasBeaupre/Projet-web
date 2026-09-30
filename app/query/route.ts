@@ -17,3 +17,5 @@ export async function GET() {
   const data = await listInvoices();
   return Response.json(data);
 }
+
+
