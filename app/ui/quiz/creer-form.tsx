@@ -15,9 +15,17 @@ type Quiz = {
     { titre: string, reponse1: string, reponse2: string, reponse3: string, reponse4: string, bonneReponse: string }
   ]
 }
-const categoriesQuiz = [{label:"science", value:"science"},
-  {label:"math", value:"math"},
-  {label:"geo", value:"geo"} ]
+const categoriesQuiz = [
+  {label:"Science", value:"science"},
+  {label:"Culture", value:"culture"},
+  {label:"Jeux vidéo", value:"jeux"},
+{label:"Histoire", value:"histoire"},
+{label:"Mathématiques", value:"mathematiques"},
+{label:"Musique", value:"musique"},
+{label:"Sport", value:"sport"},
+{label:"Littérature", value:"litterature"},
+{label:"Animaux", value:"animaux"},
+{label:"Autre...", value:"autre"}, ]
 
 export default function QuizForm() {
 
