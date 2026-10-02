@@ -16,14 +16,12 @@ export default async function ajouterQuiz(data:any) {
   ])
 }
 
-// import { createClient } from '@/lib/supabase/server';
 
-// export default async function Notes() {
-//   const supabase = await createClient();
-//   const { data: notes, error } = await supabase
-//   .schema('public')
-//   .from('notes')
-//   .select();
-
-//   return <pre>{JSON.stringify(notes, null, 2)}</pre>
-// }
+export async function lireUnQuiz(data:any) {
+  const supabase = await createClient();
+  const { error } = await supabase
+  .schema('public')
+  .from('Quiz')
+  .select()
+  .match({id:data});
+}
