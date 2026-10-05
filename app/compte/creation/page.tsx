@@ -78,7 +78,7 @@ export default function SignUpPage() {
             return
         }
 
-
+        supabase.auth.signOut()
         sessionStorage.setItem('messageFlash', 'compteCree')
         router.push('/compte/connexion')
 

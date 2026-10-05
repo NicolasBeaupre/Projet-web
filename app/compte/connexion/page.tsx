@@ -31,7 +31,7 @@ export default function LoginPage() {
     e.preventDefault()
     setLoading(false)
     const supabase = createClient()
-    supabase.auth.signOut()
+    
     setLoading(true)
     const { error } = await supabase.auth.signInWithPassword({
 
