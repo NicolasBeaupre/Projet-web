@@ -29,11 +29,18 @@ export async function middleware(request: NextRequest) {
     url.pathname = '/erreur'
     return NextResponse.redirect(url)
   }
-    if (user && request.nextUrl.pathname.startsWith('/compte/connexion')) {
+  if (user && request.nextUrl.pathname.startsWith('/compte/connexion')) {
     const url = request.nextUrl.clone()
     url.pathname = '/erreur'
     return NextResponse.redirect(url)
   }
+  if (!user && request.nextUrl.pathname == ('/compte')) {
+    const url = request.nextUrl.clone()
+    url.pathname = '/compte/connexion'
+    return NextResponse.redirect(url)
+  }
+
+
 
   return response
 }
