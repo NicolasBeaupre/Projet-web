@@ -24,11 +24,16 @@ export async function middleware(request: NextRequest) {
   // This call validates the token and refreshes it if needed
   const { data: { user } } = await supabase.auth.getUser()
 
-//   if (!user && request.nextUrl.pathname.startsWith('/quiz/creation')) {
-//     const url = request.nextUrl.clone()
-//     url.pathname = '/compte/connexion'
-//     return NextResponse.redirect(url)
-//   }
+  if (user && request.nextUrl.pathname.startsWith('/compte/creation')) {
+    const url = request.nextUrl.clone()
+    url.pathname = '/erreur'
+    return NextResponse.redirect(url)
+  }
+    if (user && request.nextUrl.pathname.startsWith('/compte/connexion')) {
+    const url = request.nextUrl.clone()
+    url.pathname = '/erreur'
+    return NextResponse.redirect(url)
+  }
 
   return response
 }
