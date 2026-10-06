@@ -18,10 +18,19 @@ export default async function ajouterQuiz(data:any) {
 
 
 export async function lireUnQuiz(data:any) {
-  const supabase = await createClient();
-  const { error } = await supabase
+  const supabase = await createClient()
+  console.log(data)
+  const { data: donneeQuiz, error } = await supabase
   .schema('public')
   .from('Quiz')
   .select()
-  .match({id:data});
+  .match({nomQuiz:data})
+  .single()
+
+  if (error){
+    // throw new Error('Quiz inexistant')
+    console.log(donneeQuiz)
+  }
+
+  return donneeQuiz
 }

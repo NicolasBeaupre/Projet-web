@@ -10,9 +10,12 @@ export type User = {
 };
 
 export type Quiz = {
-  id:string;
-  nom:string;
-  image_url:string;
+  nomQuiz: string,
+  imageURL: string,
+  categorie: string,
+  questions: [
+    { titre: string, reponse1: string, reponse2: string, reponse3: string, reponse4: string, bonneReponse: string }
+  ]
 }
 
 export type Questions = {
