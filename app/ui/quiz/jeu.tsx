@@ -2,50 +2,109 @@
 import { CountdownCircleTimer } from "react-countdown-circle-timer";
 import { Quiz } from "@/app/lib/definitions";
 import { Button } from "@/components/ui/button";
+import React, { useState } from "react";
+import { set } from "react-hook-form";
 
 
 export default function Jeu({ quiz }: { quiz: Quiz }) {
-     const handleClick = async (data: any) => {
+
+    const [numeroQuestion, setNumeroQuestion] = React.useState(0)
+
+    const [pointage, setPointage] = React.useState(0)
+
+    const [afficherQuestion, setAfficherQuestion] = useState(true)
+
+    const handleAffichage = () =>{
+        setAfficherQuestion(current => !current)
+    }
+
+    const incrementerPointage = () =>{
+        setPointage(pointage + 1)
+        console.log("test pointage")
+        console.log(pointage)
+    }
+
+    const incrementerNumeroQuestion = () =>{
+        setNumeroQuestion(numeroQuestion + 1)
+        console.log("test numeroQuestion")
+        console.log(numeroQuestion)
+    }
+
+    const terminerQuestion = (data: any) =>{
+        console.log("test pointage externe")
+        console.log(pointage)
+
+        console.log("reponse numero")
+        console.log(`reponse${data}`)
+
+        console.log("bonneReponse")
+        console.log(quiz.questions[numeroQuestion].bonneReponse)
+
+        if (`reponse${data}` === quiz.questions[numeroQuestion].bonneReponse) {
+            incrementerPointage()
+        }
+        console.log("test pointage externe")
+        console.log(pointage)
+
+        console.log("quiz.questions.length")
+        console.log(quiz.questions.length)
+
+        console.log("numeroQuestion+1")
+        console.log(numeroQuestion+1)
+
+        if (quiz.questions.length > numeroQuestion+1) {
+            incrementerNumeroQuestion()
+        }
+        else{
+
+        }
+
+
+    }
+
+    const handleClick = async (data: any) => {
         console.log("test reponse")
         console.log(data)
-      }
-      const handleTimer = () => {
+        terminerQuestion(data)
+    }
+    const handleTimer = () => {
         console.log("test timer")
-      }
+        terminerQuestion("")
+    }
     return (
         <div>
-            <div className="flex justify-center">
-                <div>
-                    <h2>{quiz.nomQuiz}</h2>
-                </div>
-                <div>
-                    <CountdownCircleTimer
-                        isPlaying
-                        duration={30}
-                        colors={['#22C55E', '#EAB308', '#EF4444']}
-                        colorsTime={[30, 15, 0]}
-                        size={180}
-                        onComplete={handleTimer}
+            {afficherQuestion==true &&
+            <div className="fixed flex justify-center my-5 top-15 right-5 sm:right-15">
+                <CountdownCircleTimer
+                    isPlaying
+                    duration={30}
+                    colors={['#22C55E', '#EAB308', '#EF4444']}
+                    colorsTime={[30, 15, 0]}
+                    size={120}
+                    onComplete={handleTimer}
+                >
+                    {({ remainingTime }) => (
+                        <div className="text-2xl font-bold">
+                            {remainingTime}
+                        </div>
+                    )}
+                </CountdownCircleTimer>
+            </div>}
 
-                    >
-                        {({ remainingTime }) => (
-                            <div className="text-2xl font-bold">
-                                {remainingTime}
-                            </div>
-                        )}
-                    </CountdownCircleTimer>
-                </div>
+
+            <div className="flex justify-center items-center my-20 flex-col">
+                <h2 className="text-2xl font-bold text-center w-2/5">Question {numeroQuestion+1}</h2>
+                <p>{quiz.questions[numeroQuestion].titre}</p>
+
             </div>
+
             <div>
-                <div>
-                    <h2>{quiz.questions[0].titre}</h2>
-                </div>
-                <div className='grid grid-cols-2 w-full align-middle'>
+                <div className='grid sm:grid-cols-2 w-full align-middle'>
                     {[1, 2, 3, 4].map((numReponse) => (
-                        <div key={numReponse} className='flex items-center flex-wrap gap-5 m-5 border border-gray-300 border-8 rounded p-3'>
-                            <div className="peer block w-full h-50 rounded-md border border-gray-200  text-sm outline-gray-200 focus:outline-black text-black
+                        <div key={numReponse} className='flex items-center flex-wrap my-5 rounded'>
+                            <div className="peer block w-5/6 sm:h-50 h-25 rounded-md border border-gray-200 focus:outline-black text-black
                   placeholder:text-gray-500 text-center m-auto">
-                                <Button type="button" className="w-full h-full" onClick={() =>handleClick(numReponse)}>{(quiz.questions?.[0] as any)?.[`reponse${numReponse}`]}</Button>
+                                <Button type="button" className="w-full h-full text-lg font-bold" onClick={() => handleClick(numReponse)}>{(quiz.questions?.[numeroQuestion] as any)?.[`reponse${numReponse}`]}</Button>
                             </div>
                         </div>
                     ))}
