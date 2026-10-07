@@ -14,6 +14,7 @@ export default async function SignUpPage() {
 
 
 
+
     return (
 
         <div className='flex justify-center'>

@@ -3,6 +3,7 @@ import PlaceholderContenue from '@/app/ui/placeholder-contenue'
 
 
 export default function Home() {
+  // throw new Error("bob")
   return (
     <div className="flex flex-col flex-1 items-center justify-center font-sans dark:bg-black">
       <main className="flex flex-1 w-full max-w-4xl  flex-col items-center justify-between py-20 bg-white dark:bg-black sm:items-start">

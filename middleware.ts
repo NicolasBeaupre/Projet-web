@@ -1,4 +1,5 @@
 import { createServerClient } from '@supabase/ssr'
+
 import { NextResponse, type NextRequest } from 'next/server'
 
 export async function middleware(request: NextRequest) {
@@ -26,12 +27,13 @@ export async function middleware(request: NextRequest) {
 
   if (user && request.nextUrl.pathname.startsWith('/compte/creation')) {
     const url = request.nextUrl.clone()
-    url.pathname = '/erreur'
+    url.pathname = '/compte'
     return NextResponse.redirect(url)
   }
   if (user && request.nextUrl.pathname.startsWith('/compte/connexion')) {
+
     const url = request.nextUrl.clone()
-    url.pathname = '/erreur'
+    url.pathname = '/compte'
     return NextResponse.redirect(url)
   }
   if (!user && request.nextUrl.pathname == ('/compte')) {
@@ -39,6 +41,8 @@ export async function middleware(request: NextRequest) {
     url.pathname = '/compte/connexion'
     return NextResponse.redirect(url)
   }
+
+
 
 
 
