@@ -1,4 +1,3 @@
-// components/SignOutButton.tsx
 'use client'
 
 import { useRouter } from 'next/navigation'
@@ -14,6 +13,8 @@ export default function BtnDeconnexion() {
       console.error('Erreur deconnexion', error.message)
       return
     }
+
+
     router.push('/compte/connexion')
     router.refresh()
   }

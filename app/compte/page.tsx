@@ -19,8 +19,10 @@ export default async function SignUpPage() {
         <div className='flex justify-center'>
             <div className="container flex justify-center py-10">
                 <h1 className="text-2xl">Votre compte</h1>
-                
-            
+                <div className=''>
+
+                </div>
+
             </div>
         </div>
 

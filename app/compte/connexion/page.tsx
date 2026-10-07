@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button"
 import { useRouter } from 'next/navigation'
 import { redirect } from 'next/navigation'
 import { refresh } from 'next/cache'
+
 export default function LoginPage() {
   const router = useRouter()
   const [username, setUsername] = useState('')
@@ -31,7 +32,7 @@ export default function LoginPage() {
     e.preventDefault()
     setLoading(false)
     const supabase = createClient()
-    
+
     setLoading(true)
     const { error } = await supabase.auth.signInWithPassword({
 
@@ -46,10 +47,11 @@ export default function LoginPage() {
       if (error.message == "Invalid login credentials")
         setMessage("La combinaison nom d'utilisateur, mot de passe n'existe pas.")
         // setMessage(error.message)
-        
+
 
       return
     }
+
     router.push('/')
     router.refresh()
 
