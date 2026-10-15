@@ -5,7 +5,7 @@ import Footer from '@/app/ui/footer'
 import NavbarAcceuil from '@/app/ui/navbar-acceuil'
 import NewQuizBtn from '@/app/ui/nouveau-quiz-btn'
 import { createClient } from "@/lib/supabase/server"
-
+import AuthEcoute from "@/components/AuthEcoute";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -31,6 +31,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex  flex-col">
+        <AuthEcoute userId={user?.id ?? null} />
         <NavbarAcceuil user={user}/>
         {children}
         <NewQuizBtn />

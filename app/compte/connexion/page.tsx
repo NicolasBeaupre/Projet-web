@@ -46,12 +46,12 @@ export default function LoginPage() {
       console.log(error.message)
       if (error.message == "Invalid login credentials")
         setMessage("La combinaison nom d'utilisateur, mot de passe n'existe pas.")
-        // setMessage(error.message)
+        
 
 
       return
     }
-
+    
     router.push('/')
     router.refresh()
 
