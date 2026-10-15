@@ -5,6 +5,7 @@ import {
 } from '@heroicons/react/24/outline';
 import { useForm, useFieldArray, Controller } from 'react-hook-form';
 import Select from 'react-select';
+import ajouterQuiz from '@/app/lib/action';
 
 type Quiz = {
   nomQuiz: string,
@@ -14,9 +15,17 @@ type Quiz = {
     { titre: string, reponse1: string, reponse2: string, reponse3: string, reponse4: string, bonneReponse: string }
   ]
 }
-const categoriesQuiz = [{label:"science", value:"science"},
-  {label:"math", value:"math"},
-  {label:"geo", value:"geo"} ]
+const categoriesQuiz = [
+  {label:"Science", value:"science"},
+  {label:"Culture", value:"culture"},
+  {label:"Jeux vidéo", value:"jeux"},
+{label:"Histoire", value:"histoire"},
+{label:"Mathématiques", value:"mathematiques"},
+{label:"Musique", value:"musique"},
+{label:"Sport", value:"sport"},
+{label:"Littérature", value:"litterature"},
+{label:"Animaux", value:"animaux"},
+{label:"Autre...", value:"autre"}, ]
 
 export default function QuizForm() {
 
@@ -35,8 +44,8 @@ export default function QuizForm() {
     control,
     name: 'questions',
   })
-  const onSubmit = (data: Quiz) => {
-    console.log("Données Quiz", data)
+  const onSubmit = async (data: any) => {
+    await ajouterQuiz(data);
   }
   return (
     <div>
@@ -81,6 +90,7 @@ export default function QuizForm() {
                 rules={{ required: true }}
                 render={({field}) =>(
                     <Select
+                    instanceId={"quiz"}
                       options={categoriesQuiz}
                       menuPlacement="auto"
                       placeholder="Sélectionnez une catégorie ..."
