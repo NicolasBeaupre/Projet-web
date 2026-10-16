@@ -26,10 +26,8 @@ const Footer = () => {
                 <div className='mx-auto flex max-w-7xl justify-center px-4 py-8 sm:px-6'>
                     <p className='text-center font-medium text-balance'>
                         {`©${new Date().getFullYear()}`}{' '}
-                        <a href='#' className='hover:underline'>
-                            QUIZTRO
-                        </a>
-
+                        <Button variant="link" className="text-lg pl-0"  render={<Link href="/" />} nativeButton={false}  >Quiztro</Button>
+                    
                     </p>
                 </div>
             </div>
