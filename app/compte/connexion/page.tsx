@@ -34,19 +34,19 @@ export default function LoginPage() {
     const supabase = createClient()
 
     setLoading(true)
+
     const { error } = await supabase.auth.signInWithPassword({
 
-      email: `${username.toLowerCase()}@quiztro.local`,
+      email: `${username.toLowerCase()}@quiztro.invalid`,
       password: password
     }
 
     )
     setLoading(false)
     if (error) {
-      console.log(error.message)
+
       if (error.message == "Invalid login credentials")
         setMessage("La combinaison nom d'utilisateur, mot de passe n'existe pas.")
-        
 
 
       return
@@ -76,7 +76,7 @@ export default function LoginPage() {
 
       <form onSubmit={handleSubmit} className='flex w-80 flex-1 flex-col gap-2 py-20' noValidate>
 
-        <input className=' rounded-lg border p-2' placeholder="nom d'utilisateur" type="email" value={username} onChange={(e) => setUsername(e.target.value)} required />
+        <input className=' rounded-lg border p-2' placeholder="nom d'utilisateur"  value={username} onChange={(e) => setUsername(e.target.value)} required />
         <input className='rounded-lg border p-2' placeholder='Mot de passe' type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
 
         {message && <p className="text-sm text-red-600">{message}</p>}

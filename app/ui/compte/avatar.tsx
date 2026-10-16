@@ -24,7 +24,7 @@ import type { User } from '@supabase/supabase-js'
 
 export function AvatarDropdown({ user }: { user: User | null }) {
     const i = user?.user_metadata?.username?.[0].toUpperCase();
-    
+    // const i = "o"
     return (
         <DropdownMenu>
             <DropdownMenuTrigger render={<Button variant="ghost" size="icon" className="rounded-full"><Avatar>

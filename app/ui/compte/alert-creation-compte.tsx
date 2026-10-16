@@ -8,7 +8,7 @@ import {
 
 export function AlertBasic() {
   return (
-    <Alert className="max-w-md">
+    <Alert  className="max-w-md bg-emerald-100 border-emerald-600">
       <CheckCircle2Icon />
       <AlertTitle>Compte créé avec succès</AlertTitle>
       <AlertDescription>

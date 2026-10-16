@@ -83,6 +83,7 @@ export default function NavbarAcceuil({ user }: { user: User | null }) {
                                     <Button className="" size="icon"><SearchIcon /></Button>
                                 </Field>
 
+
                                 <div className="flex flex-col gap-2 my-15">
                                     {user == null &&
                                         <div className="flex flex-col ">
@@ -92,12 +93,11 @@ export default function NavbarAcceuil({ user }: { user: User | null }) {
                                             <Button className="h-10 text-2xl" variant="secondary" render={<Link href="/compte/creation" />} nativeButton={false}  >Rejoindre</Button>
                                         </div>
                                     }
-                                    {/* {user !== null &&
-                                    <div className="flex flex-col ">
-                                    <Button className="h-10 text-2xl" render={<Link href="/compte" />} nativeButton={false}>Compte</Button>
-                                    <BtnDeconnexion ></BtnDeconnexion>
-                                    </div>
-                                    } */}
+                                    {user !== null &&
+
+                                        <Button className="text-2xl h-12" render={<Link href="/compte" />} nativeButton={false}>Mon compte</Button>
+                                    }
+                                    
 
 
                                 </div>

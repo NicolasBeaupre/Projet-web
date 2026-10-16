@@ -34,6 +34,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
         <AuthEcoute userId={user?.id ?? null} />
         <NavbarAcceuil user={user}/>
         {children}
+ 
         <NewQuizBtn />
         <Footer />
       </body>

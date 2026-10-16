@@ -57,12 +57,13 @@ export default function SignUpPage() {
 
 
         setLoading(true)
-        const { error } = await supabase.auth.signUp({
-            email: `${username.toLowerCase()}@quiztro.local`,     
-                 
+        const {error } = await supabase.auth.signUp({
+            email: `${username.toLowerCase()}@quiztro.invalid`,
+            
             password,
             options: { data: { username: username.trim(), locale: 'fr' } },
         })
+ 
         setLoading(false)
 
 
@@ -99,8 +100,8 @@ export default function SignUpPage() {
                 <input className={` p-2 rounded-lg border  ${passwordErreur ? 'border-red-600' : ''}`} placeholder='Validation du mot de passe' type="password" value={password2} onChange={(e) => setPassword2(e.target.value)} required />
                 {message && <p className="text-sm text-red-600">{message}</p>}
                 <button disabled={loading} className='rounded-lg bg-primary text-secondary border p-2' type="submit">{loading ? 'Création...' : "S'inscrire"}</button>
-                
-                <Button  variant="link" render={<Link href="/compte/connexion" />} nativeButton={false}>Déjà un compte?</Button>
+
+                <Button variant="link" render={<Link href="/compte/connexion" />} nativeButton={false}>Déjà un compte?</Button>
 
             </form>
         </div>
