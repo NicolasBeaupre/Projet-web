@@ -28,7 +28,7 @@ export function AvatarDropdown({ user }: { user: User | null }) {
     return (
         <DropdownMenu>
             <DropdownMenuTrigger render={<Button variant="ghost" size="icon" className="rounded-full"><Avatar>
-                <AvatarImage src="https://placehold.net/avatar-2.png" alt="shadcn" />
+                {/* <AvatarImage src="https://placehold.net/avatar-2.png" alt="avatar" /> */}
                 <AvatarFallback><p className="text-lg font-bold">{i}</p></AvatarFallback>
             </Avatar></Button>} />
             <DropdownMenuContent className="w-32">
