@@ -4,8 +4,13 @@ import { createClient } from '@/lib/supabase/server'
 import { redirect } from "next/navigation";
 
 import { DialogModifierMotDePasse } from '../ui/compte/modifier-mot-de-passe';
-
+import { Metadata } from 'next';
+ 
+export const metadata: Metadata = {
+  title: 'Mon Compte',
+};
 export default async function Compte() {
+    
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser()
 
@@ -30,6 +35,7 @@ export default async function Compte() {
 
     return (
         <div className=" flex justify-center ">
+            
 
             <div className=" container   flex flex-col gap-10 my-25 justify-center text-center align-middle">
                 <h1 className="text-2xl font-bold ">Mon compte</h1>
