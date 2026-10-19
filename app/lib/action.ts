@@ -22,12 +22,12 @@ export async function ajouterNote(nomQuiz: any, nouvelleNote: number) {
   const { data: noteQuiz } = await supabase
     .schema('public')
     .from('Quiz')
-    .select('note')
+    .select('notes')
     .eq('nomQuiz', nomQuiz)
     .single();
 
 
-  const notesExistantes = noteQuiz?.note
+  const notesExistantes = noteQuiz?.notes
   const noteActuelle = notesExistantes ? [...notesExistantes, nouvelleNote] : [nouvelleNote]
 
 
@@ -36,7 +36,7 @@ export async function ajouterNote(nomQuiz: any, nouvelleNote: number) {
     .from('Quiz')
     .update(
       {
-        note: noteActuelle,
+        notes: noteActuelle,
       }
     )
     .eq('nomQuiz', nomQuiz)
