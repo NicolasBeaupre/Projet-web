@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import React, { useState } from "react";
 import Link from "next/link";
 import { CircleX, Star, CircleCheck } from "lucide-react";
+import { ajouterNote } from "@/app/lib/action";
 
 
 export default function Jeu({ quiz }: { quiz: Quiz }) {
@@ -21,13 +22,19 @@ export default function Jeu({ quiz }: { quiz: Quiz }) {
 
     const [terminerQuiz, setTerminerQuiz] = useState(false)
 
-    const handleNoteQuiz = (data: any) =>
+    const handleNoteQuiz = async (data: any) =>
     {
         setNoteQuiz(noteQuiz => data)
+        modifierNoteBD()
     }
 
     const handleReponse = (data: any) => {
         setReponse(reponse => `reponse${data}`)
+
+    }
+
+    async function modifierNoteBD() {
+        await ajouterNote(quiz.nomQuiz, noteQuiz)
     }
 
     const handleAffichage = () => {
