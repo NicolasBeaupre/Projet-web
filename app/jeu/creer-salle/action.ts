@@ -22,7 +22,7 @@ export default async function CreerSalle(pSalle: SalleTemp) {
         if (user.id !== pSalle.idCreateur) {
             return 'Vous ne pouvez pas créer une salle pour un autre utilisateur.'
         }
-        if(user.is_anonymous == true){
+        if (user.is_anonymous == true) {
             return 'Vous devez être connecter avant de créer une salle'
         }
         let code = ''
@@ -46,13 +46,14 @@ export default async function CreerSalle(pSalle: SalleTemp) {
 
         await ajouterSalle(salle)
         const salleExiste = await lireCodeExiste(code)
-        if (salleExiste) return ("Creer")
-        
+        if (salleExiste) return ({ resultat: "Creer", code: code })
+
+
         return "Veuillez nous excuser. Une erreur imprévue est survenue. Veillez réessayer plus tard"
-        
+
     }
     catch {
-        return("Une erreur imprévue est survenue. Veillez réessayer plus tard")
+        return ("Une erreur imprévue est survenue. Veillez réessayer plus tard")
     }
 }
 

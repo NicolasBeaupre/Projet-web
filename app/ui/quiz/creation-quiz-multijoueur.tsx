@@ -13,7 +13,7 @@ import {
     SelectValue,
 } from "@/components/ui/select"
 import { Button } from "@/components/ui/button"
-import CreerSalle from '@/app/jeu/multijoueur/action'
+import CreerSalle from '@/app/jeu/creer-salle/action'
 import { Code } from 'lucide-react'
 type Salle = {
     idCreateur?: string,
@@ -78,13 +78,14 @@ export default function ComponentsCreationQuizMultijoueur() {
         }
 
         const result = await CreerSalle(data)
-        if (result === "Creer") {
+        if (typeof result !== 'string' &&result.resultat === "Creer") {
             setLoading(false)
-            router.push('/')
+            router.push('/jeu/salle/' + result.code)
         }
         else {
             setLoading(false)
-            setMessage(result)
+            if(typeof result === 'string') setMessage(result)
+            
         }
 
 
