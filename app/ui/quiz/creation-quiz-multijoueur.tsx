@@ -13,7 +13,7 @@ import {
     SelectValue,
 } from "@/components/ui/select"
 import { Button } from "@/components/ui/button"
-import { CreerSalle } from '@/app/jeu/multijoueur/action'
+import CreerSalle from '@/app/jeu/multijoueur/action'
 import { Code } from 'lucide-react'
 type Salle = {
     idCreateur?: string,
@@ -23,7 +23,7 @@ type Salle = {
 export default function ComponentsCreationQuizMultijoueur() {
 
     const router = useRouter()
-    
+
     const [nbrJoueur, setNbrJoueur] = useState('')
     const [message, setMessage] = useState('')
     const [loading, setLoading] = useState(false)
@@ -69,26 +69,33 @@ export default function ComponentsCreationQuizMultijoueur() {
             return
         }
         setLoading(true)
-        const data:Salle = 
+        const data: Salle =
         {
             // idCreateur: user?.id,
-            idCreateur: "mike",
+            idCreateur: user?.id,
             nomLobby: nomLobby,
             nbrJoueurMax: nbrJoueur
         }
 
-        setTimeout(() => {
+        const result = await CreerSalle(data)
+        if (result === "Creer") {
             setLoading(false)
-        }, 5000);
+            router.push('/')
+        }
+        else {
+            setLoading(false)
+            setMessage(result)
+        }
 
-        console.log( CreerSalle(data))
-        console.log(data)
+
+
+        // console.log(data)
     }
 
     return (
 
         <div className=" flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans  dark:bg-black">
-            
+
             <h1 className='text-3xl mb-10 font-bold '>Création d'un lobby multijoueur</h1>
             <div className=' flex flex-col gap-10  p-5 border-2 rounded-2xl'>
 

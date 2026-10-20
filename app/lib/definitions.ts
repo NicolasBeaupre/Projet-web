@@ -10,11 +10,10 @@ export type User = {
 };
 
 export type Salle = {
-  id: string;
   code: string;
   createur_salle: string;
-  nbr_joueur_max: Int16Array;
-  nom_salle: Text;
+  nbr_joueur_max: number;
+  nom_salle: string;
 }
 
 export type Quiz = {
