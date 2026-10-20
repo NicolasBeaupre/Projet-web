@@ -6,15 +6,8 @@ import {
 import { useForm, useFieldArray, Controller } from 'react-hook-form';
 import Select from 'react-select';
 import ajouterQuiz from '@/app/lib/action';
+import { Quiz } from '@/app/lib/definitions';
 
-type Quiz = {
-  nomQuiz: string,
-  imageURL: string,
-  categorie: string,
-  questions: [
-    { titre: string, reponse1: string, reponse2: string, reponse3: string, reponse4: string, bonneReponse: string }
-  ]
-}
 const categoriesQuiz = [
   {label:"Science", value:"science"},
   {label:"Culture", value:"culture"},
