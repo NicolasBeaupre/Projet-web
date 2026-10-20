@@ -9,6 +9,14 @@ export type User = {
   password: string;
 };
 
+export type Salle = {
+  id: string;
+  code: string;
+  createur_salle: string;
+  nbr_joueur_max: Int16Array;
+  nom_salle: Text;
+}
+
 export type Quiz = {
   id:string;
   nom:string;

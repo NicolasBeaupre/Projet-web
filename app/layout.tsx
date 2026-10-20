@@ -31,10 +31,13 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex  flex-col">
-        
-        <NavbarAcceuil user={user}/>
-        {children}
- 
+
+        <NavbarAcceuil user={user} />
+        <main className="flex flex-col flex-1">
+
+          {children}
+        </main>
+
         <NewQuizBtn />
         <Footer />
       </body>
