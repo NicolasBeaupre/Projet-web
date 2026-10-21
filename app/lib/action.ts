@@ -68,59 +68,120 @@ export async function lireUnQuiz(data: any) {
 
 
 
-
-export async function ajouterSalle(data:any) {
+export async function ajouterSalle(data: any) {
   const supabase = await createClient();
   const { error } = await supabase
-  .schema('public')
-  .from('salle')
-  .insert([
-    {
-    code: data.code,
-    createur_salle: data.createur_salle,
-    nbr_joueur_max: data.nbr_joueur_max,
-    nom_salle: data.nom_salle,
-    }
-  ])
+    .schema('public')
+    .from('salle')
+    .insert([
+      {
+        code: data.code,
+        createur_salle: data.createur_salle,
+        nbr_joueur_max: data.nbr_joueur_max,
+        nom_salle: data.nom_salle,
+      }
+    ])
 }
 
 // Renvoi true si le code de la salle existe déjà
-export async function lireCodeExiste(pCode : string){
+export async function lireCodeExiste(pCode: string) {
   const supabase = await createClient();
-  const {data:salle, error } = await supabase
-  .schema('public')
-  .from('salle')
-  .select()
-  .match({code:pCode})
+  const { data: salle, error } = await supabase
+    .schema('public')
+    .from('salle')
+    .select()
+    .match({ code: pCode })
 
   if (salle && salle.length > 0)
     return true
   else return false
 }
 
-export async function lireSalle(code : string){
+export async function lireSalle(code: string) {
   const supabase = await createClient();
-  const {data:salle, error } = await supabase
-  .schema('public')
-  .from('salle')
-  .select()
-  .match({code: code})
+  const { data: salle, error } = await supabase
+    .schema('public')
+    .from('salle')
+    .select()
+    .match({ code: code })
 
   return salle
-  
+
 }
 
-export async function lireSalleCreeUser(createur_salle : string){
+export async function lireSalleCreeUser(createur_salle: string) {
   //Renvoie true si le user a actuellement une salle en cours et que la partie de celle-ci n'est pas en cours
   const supabase = await createClient();
-  const {data:salle, error } = await supabase
-  .schema('public')
-  .from('salle')
-  .select()
-  .match({createur_salle: createur_salle})
+  const { data: salle, error } = await supabase
+    .schema('public')
+    .from('salle')
+    .select()
+    .match({ createur_salle: createur_salle })
 
   if (salle && salle.length > 0)
     return true
 
   else return false
 }
+
+
+
+export async function lireSalleJoueur(id_salle: string) {
+  const supabase = await createClient();
+  const { data: salle, error } = await supabase
+    .schema('public')
+    .from('salle_joueur')
+    .select()
+    .match({ id_salle: id_salle })
+
+  return salle
+
+}
+
+
+
+export async function ajouterJoueurSalle(data: any) {
+  const supabase = await createClient();
+  const joueurs = await lireSalleJoueur(data.id_salle)
+  let estDejaPresent = false
+  if (joueurs !== null) {
+
+    for (let i = 0; i < joueurs.length; i++) {
+      if (joueurs[i].id_joueur == data.id_joueur) estDejaPresent = true
+
+    }
+  }
+  if (!estDejaPresent) {
+
+    const { error } = await supabase
+      .schema('public')
+      .from('salle_joueur')
+      .insert([
+        {
+          id_salle: data.id_salle,
+          id_joueur: data.id_joueur,
+          nom_joueur: data.nom_joueur
+        }
+      ])
+  }
+}
+
+export async function supprimerJoueurSalle(id_joueur: string,id_salle:string) {
+  const supabase = await createClient();
+  const { error } = await supabase
+    .schema('public')
+    .from('salle_joueur')
+    .delete().match({ id_salle: id_salle , id_joueur:id_joueur})
+
+}
+
+export async function supprimerSalle(id_joueur: string,id_salle:string) {
+  
+  const supabase = await createClient();
+  const { error } = await supabase
+    .schema('public')
+    .from('salle')
+    .delete().eq( 'id', id_salle)
+
+}
+

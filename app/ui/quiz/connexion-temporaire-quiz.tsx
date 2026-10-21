@@ -40,7 +40,7 @@ export default function Connexion() {
             return
         }
 
-        router.push('/jeu/creer-salle')
+        router.push('/')
         router.refresh()
 
     }
