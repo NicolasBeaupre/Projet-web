@@ -1,6 +1,6 @@
 "use server"
 import { createClient } from '@/lib/supabase/server';
-
+import { Salle } from './definitions';
 export default async function ajouterQuiz(data: any) {
   const supabase = await createClient();
   const { error } = await supabase
@@ -143,6 +143,7 @@ export async function lireSalleJoueur(id_salle: string) {
 export async function ajouterJoueurSalle(data: any) {
   const supabase = await createClient();
   const joueurs = await lireSalleJoueur(data.id_salle)
+
   let estDejaPresent = false
   if (joueurs !== null) {
 
@@ -164,6 +165,7 @@ export async function ajouterJoueurSalle(data: any) {
         }
       ])
   }
+  
 }
 
 export async function supprimerJoueurSalle(id_joueur: string,id_salle:string) {
