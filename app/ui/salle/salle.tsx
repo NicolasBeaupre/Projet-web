@@ -27,16 +27,15 @@ import { usePathname, useSearchParams } from 'next/navigation'
 export default function ComponantSalle({ pSalle, joueursInitiaux, user }: { pSalle: VraiSalle, joueursInitiaux: SalleJoueur[], user: User }) {
     const [salle, setSalle] = useState(pSalle)
     const [joueurs, setJoueurs] = useState(joueursInitiaux)
-    const [url, setUrl] = useState('')
+    const [url, setUrl] = useState('') // url pour le copier coller. Lien de la salle
     const router = useRouter()
-    // const pathname = usePathname()
-    // const searchParams = useSearchParams()
-    // const url = `${window.location.origin}${pathname}${searchParams.toString()}`
 
 
     useEffect(() => {
         setUrl(window.location.href)
     }, [])
+
+    
     useEffect(() => {
         const supabase = createClient()
 
@@ -76,6 +75,7 @@ export default function ComponantSalle({ pSalle, joueursInitiaux, user }: { pSal
         router.push('/')
         router.refresh()
     }
+
     async function SupprimerSalle() {
         supprimerSalle(user.id, pSalle.id)
         router.push('/')
