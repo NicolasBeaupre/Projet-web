@@ -16,7 +16,7 @@ export default async function ajouterQuiz(data: any) {
     ])
 }
 
-export async function ajouterNote(nomQuiz: any, nouvelleNote: number) {
+export async function ajouterNote(nomQuiz: any, nouvelleNote: number, user: any) {
   const supabase = await createClient();
 
   const { data: noteQuiz } = await supabase
@@ -28,6 +28,13 @@ export async function ajouterNote(nomQuiz: any, nouvelleNote: number) {
 
 
   const notesExistantes = noteQuiz?.notes
+
+  // notesExistantes.forEach(note => {
+  //   if (note) {
+
+  //   }
+  // });
+
   const noteActuelle = notesExistantes ? [...notesExistantes, nouvelleNote] : [nouvelleNote]
 
 

@@ -6,9 +6,11 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { CircleX, Star, CircleCheck } from "lucide-react";
 import { ajouterNote } from "@/app/lib/action";
+import type { User } from '@supabase/supabase-js'
 
 
-export default function Jeu({ quiz }: { quiz: Quiz }) {
+export default function Jeu({ quiz, user }: { quiz: Quiz, user: User | null }) {
+
 
     const [noteQuiz, setNoteQuiz] = React.useState(0)
 
@@ -22,19 +24,17 @@ export default function Jeu({ quiz }: { quiz: Quiz }) {
 
     const [terminerQuiz, setTerminerQuiz] = useState(false)
 
-    const handleNoteQuiz = async (data: any) =>
-    {
+    const handleNoteQuiz = async (data: any) => {
         setNoteQuiz(noteQuiz => data)
-        modifierNoteBD()
+        modifierNoteBD(data)
     }
 
     const handleReponse = (data: any) => {
         setReponse(reponse => `reponse${data}`)
-
     }
 
-    async function modifierNoteBD() {
-        await ajouterNote(quiz.nomQuiz, noteQuiz)
+    async function modifierNoteBD(data: any) {
+        await ajouterNote(quiz.nomQuiz, data, user?.id)
     }
 
     const handleAffichage = () => {
@@ -127,7 +127,7 @@ export default function Jeu({ quiz }: { quiz: Quiz }) {
                                 <div className="text-green-700">
                                     <div className="flex align-center justify-center">
                                         <h2 className="text-2xl font-bold mx-4">Bonne réponse !</h2>
-                                        <p><CircleCheck size={30}/></p>
+                                        <p><CircleCheck size={30} /></p>
                                     </div>
                                     <p className="text-2xl font-bold">Votre score : {pointage + 1}/{numeroQuestion + 1}</p>
                                 </div>
@@ -136,7 +136,7 @@ export default function Jeu({ quiz }: { quiz: Quiz }) {
                                 <div className="text-red-700">
                                     <div className="flex align-center justify-center">
                                         <h2 className="text-2xl font-bold mx-4">Mauvaise réponse ! </h2>
-                                        <p><CircleX size={30}/></p>
+                                        <p><CircleX size={30} /></p>
                                     </div>
                                     <p className="text-2xl font-bold">Votre score : {pointage}/{numeroQuestion + 1}</p>
                                 </div>
@@ -201,15 +201,17 @@ export default function Jeu({ quiz }: { quiz: Quiz }) {
                         {quiz.questions[numeroQuestion].bonneReponse != reponse &&
                             <h2 className="text-xl font-bold">Votre score final: {pointage}/{numeroQuestion + 1}</h2>
                         }
-                        <div className="border-black border-10 bg-gray-100 w-1/2 h-40 rounded my-5">
-                            <h3 className="text-xl font-bold">Notez le quiz</h3>
-                            <div className="flex justify-center">
-                                {[1, 2, 3, 4, 5].map((note) => (
-                                <Star key={note} size={30} className={`mx-1 my-5 hover:text-yellow-300 ${note <= noteQuiz ? "fill-yellow-300" : "fill-white"}`} onClick={() =>handleNoteQuiz(note)}/>
-                            ))}
-                            </div>
+                        {user !== undefined &&
+                            <div className="border-black border-10 bg-gray-100 w-1/2 h-40 rounded my-5">
+                                <h3 className="text-xl font-bold">Notez le quiz</h3>
+                                <div className="flex justify-center">
+                                    {[1, 2, 3, 4, 5].map((note) => (
+                                        <Star key={note} size={30} className={`mx-1 my-5 hover:text-yellow-300 ${note <= noteQuiz ? "fill-yellow-300" : "fill-white"}`} onClick={() => handleNoteQuiz(note)} />
+                                    ))}
+                                </div>
 
-                        </div>
+                            </div>
+                        }
                         <Link href={'/'}>
                             <Button type="button" className="my-5 w-100 h-20 text-lg font-bold">Retour à l'accueil</Button>
                         </Link>
