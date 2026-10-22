@@ -17,12 +17,15 @@ import { Code } from 'lucide-react'
 import { VraiSalle, SalleJoueur } from '@/app/lib/definitions'
 import type { User } from '@supabase/supabase-js'
 import { lireSalle, lireSalleJoueur, supprimerJoueurSalle, supprimerSalle } from '@/app/lib/action'
-
-
+import { CopieLien } from './copy-clipboard-btn'
+import { usePathname, useSearchParams } from 'next/navigation'
 export default function ComponantSalle({ pSalle, joueursInitiaux, user }: { pSalle: VraiSalle, joueursInitiaux: SalleJoueur[], user: User }) {
     const [salle, setSalle] = useState(pSalle)
     const [joueurs, setJoueurs] = useState(joueursInitiaux)
     const router = useRouter()
+    const pathname = usePathname()
+    const searchParams = useSearchParams()
+    const url = `${pathname}${searchParams.toString()}`
     useEffect(() => {
         const supabase = createClient()
 
@@ -32,7 +35,7 @@ export default function ComponantSalle({ pSalle, joueursInitiaux, user }: { pSal
             let estToujoursDansSalle = false
             if (dataJoueurs == null) dataJoueurs = []
             dataJoueurs.forEach(j => {
-                if (j.id_joueur === user.id) estToujoursDansSalle = true         
+                if (j.id_joueur === user.id) estToujoursDansSalle = true
             });
             if (!estToujoursDansSalle) router.push('/')
         }
@@ -86,6 +89,8 @@ export default function ComponantSalle({ pSalle, joueursInitiaux, user }: { pSal
 
             {user.id !== pSalle.createur_salle && <Button onClick={() => { QuitterSalle() }}>Quitter</Button>}
             {user.id == pSalle.createur_salle && <Button onClick={() => { SupprimerSalle() }}>Supprimer</Button>}
+            <CopieLien lien={"http://localhost:3000" + pathname}></CopieLien>
+            {/* <CopieLien lien={`http://localhost:3000/jeu/salle/${pSalle.code}`}></CopieLien> */}
         </div>
 
 
