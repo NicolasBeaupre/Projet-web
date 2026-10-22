@@ -97,7 +97,7 @@ export default function ComponentsCreationQuizMultijoueur() {
 
         <div className=" flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans  dark:bg-black">
 
-            <h1 className='text-3xl mb-10 font-bold '>Création d'un lobby multijoueur</h1>
+            <h1 className='text-3xl mb-10 font-bold '>Création d'une salle multijoueur</h1>
             <div className=' flex flex-col gap-10  p-5 border-2 rounded-2xl'>
 
                 <form onSubmit={handleSubmit} className='flex flex-col w-80 gap-2 py-10 ' noValidate>

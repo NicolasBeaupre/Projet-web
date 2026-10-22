@@ -23,6 +23,7 @@ import { VraiSalle, SalleJoueur } from '@/app/lib/definitions'
 import type { User } from '@supabase/supabase-js'
 import { lireSalle, lireSalleJoueur, supprimerJoueurSalle, supprimerSalle } from '@/app/lib/action'
 import { CopieLien } from './copy-clipboard-btn'
+import { Copiecode } from './copy-clipboard-code'
 import { usePathname, useSearchParams } from 'next/navigation'
 export default function ComponantSalle({ pSalle, joueursInitiaux, user }: { pSalle: VraiSalle, joueursInitiaux: SalleJoueur[], user: User }) {
     const [salle, setSalle] = useState(pSalle)
@@ -35,7 +36,7 @@ export default function ComponantSalle({ pSalle, joueursInitiaux, user }: { pSal
         setUrl(window.location.href)
     }, [])
 
-    
+
     useEffect(() => {
         const supabase = createClient()
 
@@ -88,7 +89,10 @@ export default function ComponantSalle({ pSalle, joueursInitiaux, user }: { pSal
         <div className="flex flex-col flex-1 items-center align-middle  justify-end ">
             {/* <h1 className='text-3xl font-bold my-10'>Nom de la salle : {pSalle.nom_salle}</h1> */}
             <div className='text-2xl font-bold my-10  flex items-baseline mb-5'><p className=''>Nom de la salle :  </p> <p className='text-3xl ps-1'>  {pSalle.nom_salle}</p></div>
-            <div className='text-2xl font-bold  flex items-baseline mb-5'><p>code : </p> <p className='text-3xl ps-1'>  {pSalle.code}</p></div>
+            <div className=' flex items-baseline font-bold mb-5 gap-2'>
+                <p className='text-2xl font-bold '>code: </p>
+                <Copiecode lien={pSalle.code}></Copiecode>
+            </div>
             <CopieLien lien={url}></CopieLien>
             <div className='border-2 rounded-xl p-3 lg:w-2xl md:w-fit lg:h-60 md:h-fit my-10'>
                 <div className='flex justify-between flex-wrap '>

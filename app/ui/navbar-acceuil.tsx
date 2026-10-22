@@ -14,7 +14,8 @@ import { createClient } from '@/lib/supabase/client'
 import type { User } from '@supabase/supabase-js'
 import { AvatarDropdown } from "./compte/avatar"
 import BtnDeconnexion from '@/components/ui/btn-deconnexion'
-
+import { buttonVariants } from "@/components/ui/button"
+import { cn } from "@/lib/utils"
 import {
     Sheet,
     SheetContent,
@@ -22,6 +23,16 @@ import {
     SheetTitle,
 } from "@/components/ui/sheet"
 
+
+import {
+    NavigationMenu,
+    NavigationMenuContent,
+    NavigationMenuItem,
+    NavigationMenuLink,
+    NavigationMenuList,
+    NavigationMenuTrigger,
+    navigationMenuTriggerStyle,
+} from "@/components/ui/navigation-menu"
 
 export default function NavbarAcceuil({ user }: { user: User | null }) {
     const [open, setOpen] = useState(false)
@@ -58,11 +69,29 @@ export default function NavbarAcceuil({ user }: { user: User | null }) {
                         </div>
                     }
                     {user !== null &&
+
+                        <NavigationMenu className="hidden md:flex">
+                            <NavigationMenuList>
+
+                                <NavigationMenuItem>
+                                    <NavigationMenuTrigger>Salle</NavigationMenuTrigger>
+                                    <NavigationMenuContent>
+                                        <ul className="w-50">
+                                            <li><a className={buttonVariants({ variant: 'outline' })} href="/creer-salle">Créer une salle multijoueur</a></li>
+                                            <li><a className={buttonVariants({ variant: 'outline' })} href="/rejoindre-salle">Rejoindre un salle multijoueur</a></li>
+
+                                        </ul>
+                                    </NavigationMenuContent>
+                                </NavigationMenuItem>
+                            </NavigationMenuList>
+                        </NavigationMenu>
+                    }
+                    {user !== null &&
+
                         <div>
                             <AvatarDropdown user={user}></AvatarDropdown>
                         </div>
                     }
-
 
 
 
@@ -84,7 +113,7 @@ export default function NavbarAcceuil({ user }: { user: User | null }) {
                                 </Field>
 
 
-                                <div className="flex flex-col gap-2 my-15">
+                                <div className="flex flex-col gap-2 my-15 justify-between flex-1">
                                     {user == null &&
                                         <div className="flex flex-col ">
 
@@ -95,9 +124,30 @@ export default function NavbarAcceuil({ user }: { user: User | null }) {
                                     }
                                     {user !== null &&
 
-                                        <Button className="text-2xl h-12" render={<Link href="/compte" />} nativeButton={false}>Mon compte</Button>
+
+                                        <div className="flex flex-col  gap-3 mt-10">
+
+                                            <a
+                                                href="/rejoindre-salle"
+                                                className={cn(buttonVariants({ variant: "secondary" }), 'text-2xl h-12')}
+                                            >
+                                                Rejoindre une salle
+                                            </a>
+                                            <a
+                                                href="/creer-salle"
+                                                className={cn(buttonVariants({ variant: "secondary" }), 'text-2xl h-12')}
+                                            >
+                                                Créer une salle
+                                            </a>
+
+                                        </div>
                                     }
-                                    
+                                    {user !== null &&
+
+                                        <Button className="text-2xl h-12" render={<Link href="/compte" />} nativeButton={false}>Mon compte</Button>
+
+                                    }
+
 
 
                                 </div>
