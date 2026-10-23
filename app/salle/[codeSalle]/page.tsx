@@ -34,7 +34,7 @@ export default async function Page(props: PageProps<'/salle/[codeSalle]'>) {
 
             }
         }
-        if (joueurs !== null && salle !== null && salle[0].en_cours_de_Jeu ) {
+        if (joueurs !== null && salle !== null && salle[0].en_cours_de_Jeu) {
             erreur = true
             message = "Cette salle est déjà en train de répondre à un quiz."
         }
@@ -45,7 +45,16 @@ export default async function Page(props: PageProps<'/salle/[codeSalle]'>) {
 
         else {
 
-            ajouterJoueurSalle({ id_salle: salle[0].id, id_joueur: user?.id, nom_joueur: user?.user_metadata?.username })
+            if (!estJoueurDejaDansSalle) {
+                await ajouterJoueurSalle({
+                    id_salle: salle[0].id,
+                    id_joueur: user.id,
+                    nom_joueur: user.user_metadata?.username,
+                })
+                joueurs = await lireSalleJoueur(salle[0].id) 
+            }
+
+            // ajouterJoueurSalle({ id_salle: salle[0].id, id_joueur: user?.id, nom_joueur: user?.user_metadata?.username })
 
         }
 

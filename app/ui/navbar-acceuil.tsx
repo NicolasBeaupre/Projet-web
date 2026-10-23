@@ -34,7 +34,7 @@ import {
     navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu"
 
-export default function NavbarAcceuil({ user }: { user: User | null }) {
+export default function NavbarAcceuil({ user, code }: { user: User | null, code: string|null }) {
     const [open, setOpen] = useState(false)
 
     return (
@@ -68,7 +68,7 @@ export default function NavbarAcceuil({ user }: { user: User | null }) {
                             <Button className="" variant="secondary" render={<Link href="/compte/creation" />} nativeButton={false}  >Rejoindre</Button>
                         </div>
                     }
-                    {user !== null &&
+                    {user !== null && code == null &&
 
                         <NavigationMenu className="hidden md:flex">
                             <NavigationMenuList>
@@ -79,7 +79,26 @@ export default function NavbarAcceuil({ user }: { user: User | null }) {
                                         <ul className="w-50">
                                             <li><a className={buttonVariants({ variant: 'outline' })} href="/creer-salle">Créer une salle multijoueur</a></li>
                                             <li><a className={buttonVariants({ variant: 'outline' })} href="/rejoindre-salle">Rejoindre un salle multijoueur</a></li>
+                                            
+                                        </ul>
+                                    </NavigationMenuContent>
+                                </NavigationMenuItem>
+                            </NavigationMenuList>
+                        </NavigationMenu>
+                    }
+                    {user !== null && code !== null &&
 
+                        <NavigationMenu className="hidden md:flex">
+                            <NavigationMenuList>
+
+                                <NavigationMenuItem>
+                                    <NavigationMenuTrigger>Salle</NavigationMenuTrigger>
+                                    <NavigationMenuContent>
+                                        <ul className="w-50">
+                                            <li><a className={buttonVariants({ variant: 'outline' })} href={`/salle/${code}`}>Votre salle en cours</a></li>
+                                            <li><a className={buttonVariants({ variant: 'outline' })} href="/creer-salle">Créer une salle multijoueur</a></li>
+                                            <li><a className={buttonVariants({ variant: 'outline' })} href="/rejoindre-salle">Rejoindre un salle multijoueur</a></li>
+                                            
                                         </ul>
                                     </NavigationMenuContent>
                                 </NavigationMenuItem>
@@ -122,7 +141,7 @@ export default function NavbarAcceuil({ user }: { user: User | null }) {
                                             <Button className="h-10 text-2xl" variant="secondary" render={<Link href="/compte/creation" />} nativeButton={false}  >Rejoindre</Button>
                                         </div>
                                     }
-                                    {user !== null &&
+                                    {user !== null && code == null &&
 
 
                                         <div className="flex flex-col  gap-3 mt-10">
@@ -139,6 +158,27 @@ export default function NavbarAcceuil({ user }: { user: User | null }) {
                                             >
                                                 Créer une salle
                                             </a>
+
+                                        </div>
+                                    }
+                                    {user !== null && code !== null &&
+
+
+                                        <div className="flex flex-col  gap-3 mt-10">
+
+                                            <a
+                                                href="/rejoindre-salle"
+                                                className={cn(buttonVariants({ variant: "secondary" }), 'text-2xl h-12')}
+                                            >
+                                                Rejoindre une salle
+                                            </a>
+                                            <a
+                                                href="/creer-salle"
+                                                className={cn(buttonVariants({ variant: "secondary" }), 'text-2xl h-12')}
+                                            >
+                                                Créer une salle
+                                            </a>
+                                            <a className={buttonVariants({ variant: 'secondary' })} href={`/salle/${code}`}>Votre salle en cours</a>
 
                                         </div>
                                     }

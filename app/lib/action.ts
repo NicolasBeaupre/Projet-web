@@ -1,6 +1,7 @@
 "use server"
 import { createClient } from '@/lib/supabase/server';
 import { Salle } from './definitions';
+import { revalidatePath } from 'next/cache'
 export default async function ajouterQuiz(data: any) {
   const supabase = await createClient();
   const { error } = await supabase
@@ -81,6 +82,7 @@ export async function ajouterSalle(data: any) {
         nom_salle: data.nom_salle,
       }
     ])
+  revalidatePath('/', 'layout')
 }
 
 // Renvoi true si le code de la salle existe déjà
@@ -108,6 +110,32 @@ export async function lireSalle(code: string) {
   return salle
 
 }
+
+export async function lireSalleCodeParIdDuCreater(createur_salle: string) {
+  const supabase = await createClient();
+  const { data: salle, error } = await supabase
+    .schema('public')
+    .from('salle')
+    .select()
+    .match({ createur_salle: createur_salle })
+
+  if(salle !== null && salle.length > 0)  return salle[0].code
+  return null
+
+}
+export async function lireSalleIdParIdDuCreater(createur_salle: string) {
+  const supabase = await createClient();
+  const { data: salle, error } = await supabase
+    .schema('public')
+    .from('salle')
+    .select()
+    .match({ createur_salle: createur_salle })
+
+  if(salle !== null)  return salle[0].id
+  return null
+
+}
+
 
 export async function lireSalleCreeUser(createur_salle: string) {
   //Renvoie true si le user a actuellement une salle en cours et que la partie de celle-ci n'est pas en cours
@@ -185,5 +213,7 @@ export async function supprimerSalle(id_joueur: string,id_salle:string) {
     .from('salle')
     .delete().eq( 'id', id_salle)
 
+  
+  revalidatePath('/', 'layout')
 }
 

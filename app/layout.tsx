@@ -5,8 +5,8 @@ import Footer from '@/app/ui/footer'
 import NavbarAcceuil from '@/app/ui/navbar-acceuil'
 import NewQuizBtn from '@/app/ui/nouveau-quiz-btn'
 import { createClient } from "@/lib/supabase/server"
-
-
+import { lireSalleCodeParIdDuCreater } from "./lib/action";
+import { Salle } from "./lib/definitions";
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -25,6 +25,14 @@ export const metadata: Metadata = {
 export default async function RootLayout({ children }: LayoutProps<"/">) {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
+  let code = null
+  if (user !== null) {
+    code = await lireSalleCodeParIdDuCreater(user.id)
+    
+
+
+  }
+
   return (
     <html
       lang="fr"
@@ -32,7 +40,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
     >
       <body className="min-h-full flex  flex-col">
 
-        <NavbarAcceuil user={user} />
+        <NavbarAcceuil user={user} code={code} />
         <main className="flex flex-col flex-1">
 
           {children}
