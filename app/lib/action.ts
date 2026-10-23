@@ -119,7 +119,7 @@ export async function lireSalleCodeParIdDuCreater(createur_salle: string) {
     .select()
     .match({ createur_salle: createur_salle })
 
-  if(salle !== null && salle.length > 0)  return salle[0].code
+  if (salle !== null && salle.length > 0) return salle[0].code
   return null
 
 }
@@ -131,7 +131,7 @@ export async function lireSalleIdParIdDuCreater(createur_salle: string) {
     .select()
     .match({ createur_salle: createur_salle })
 
-  if(salle !== null)  return salle[0].id
+  if (salle !== null) return salle[0].id
   return null
 
 }
@@ -193,27 +193,41 @@ export async function ajouterJoueurSalle(data: any) {
         }
       ])
   }
-  
+
 }
 
-export async function supprimerJoueurSalle(id_joueur: string,id_salle:string) {
+//Supprime un joueurs d'une salle
+export async function supprimerJoueurSalle(id_joueur: string, id_salle: string) {
   const supabase = await createClient();
   const { error } = await supabase
     .schema('public')
     .from('salle_joueur')
-    .delete().match({ id_salle: id_salle , id_joueur:id_joueur})
+    .delete().match({ id_salle: id_salle, id_joueur: id_joueur })
 
 }
 
-export async function supprimerSalle(id_joueur: string,id_salle:string) {
-  
+//Supprime tout les joueurs d'une salle
+export async function supprimerJoueursSalle( id_salle: string) {
   const supabase = await createClient();
   const { error } = await supabase
     .schema('public')
-    .from('salle')
-    .delete().eq( 'id', id_salle)
+    .from('salle_joueur')
+    .delete().match({ id_salle: id_salle})
 
-  
+}
+
+
+export async function supprimerSalle( id_salle: string) {
+
+  const supabase = await createClient();
+  await supprimerJoueursSalle(id_salle)
+
+  const { error } = await supabase
+    .schema('public')
+    .from('salle')
+    .delete().eq('id', id_salle)
+
+
   revalidatePath('/', 'layout')
 }
 

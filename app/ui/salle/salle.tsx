@@ -78,7 +78,7 @@ export default function ComponantSalle({ pSalle, joueursInitiaux, user }: { pSal
     }
 
     async function SupprimerSalle() {
-        supprimerSalle(user.id, pSalle.id)
+        supprimerSalle( pSalle.id)
         router.push('/')
         router.refresh()
     }

@@ -6,7 +6,7 @@ import { Salle } from "@/app/lib/definitions"
 import { supprimerSalle, lireSalleIdParIdDuCreater } from "@/app/lib/action"
 const CaractereCode = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890'
 type SalleTemp = {
-    id:string,
+    id: string,
     idCreateur?: string,
     nomLobby: string,
     nbrJoueurMax: string,
@@ -39,12 +39,15 @@ export default async function CreerSalle(pSalle: SalleTemp) {
 
 
         const possedeDejaUneSalle = await lireSalleCreeUser(user.id)
-        if (possedeDejaUneSalle) return "Vous Possédez déjà une salle en cours de jeu. Veuillez la fermer avant d'en créer une nouvelle."
-        // if (possedeDejaUneSalle) {
-        //     const salle = await lireSalleIdParIdDuCreater(user.id)
-        //     if( salle !== null) 
-        //     await supprimerSalle(user.id,salle)
-        // }
+        // if (possedeDejaUneSalle) return "Vous Possédez déjà une salle en cours de jeu. Veuillez la fermer avant d'en créer une nouvelle."
+        if (possedeDejaUneSalle) {
+            const salle = await lireSalleIdParIdDuCreater(user.id)
+            if (salle !== null) {
+                await supprimerSalle(salle)
+
+            }
+
+        }
 
         const nbrJoueurMax = Number(pSalle.nbrJoueurMax)
 

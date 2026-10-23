@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/select"
 import { Button } from "@/components/ui/button"
 import CreerSalle from '@/app/creer-salle/action'
+import { Icon, Info } from 'lucide-react';
 
 type Salle = {
     idCreateur?: string,
@@ -78,14 +79,14 @@ export default function ComponentsCreationQuizMultijoueur() {
         }
 
         const result = await CreerSalle(data)
-        if (typeof result !== 'string' &&result.resultat === "Creer") {
+        if (typeof result !== 'string' && result.resultat === "Creer") {
             setLoading(false)
             router.push('/salle/' + result.code)
         }
         else {
             setLoading(false)
-            if(typeof result === 'string') setMessage(result)
-            
+            if (typeof result === 'string') setMessage(result)
+
         }
 
 
@@ -100,7 +101,7 @@ export default function ComponentsCreationQuizMultijoueur() {
             <h1 className='text-3xl mb-10 font-bold '>Création d'une salle multijoueur</h1>
             <div className=' flex flex-col gap-10  p-5 border-2 rounded-2xl'>
 
-                <form onSubmit={handleSubmit} className='flex flex-col w-80 gap-2 py-10 ' noValidate>
+                <form onSubmit={handleSubmit} className='flex flex-col w-80 gap-2 pt-10 ' noValidate>
                     <fieldset className='w-full flex flex-col gap-10'>
                         <Field>
                             <FieldLabel className='text-lg font-bold' htmlFor='nom-salle-multi-input'>Nom de la salle</FieldLabel>
@@ -130,7 +131,7 @@ export default function ComponentsCreationQuizMultijoueur() {
 
                     </fieldset>
 
-
+                    <p></p>
 
 
                     <Button disabled={loading} className=' mt-10 rounded-lg bg-primary text-secondary border text-2xl h-12  ' type="submit">{loading ? (
@@ -151,7 +152,10 @@ export default function ComponentsCreationQuizMultijoueur() {
                     ) : "Créer"}</Button>
 
 
+                    <div className='flex'>
 
+                        <p className='font-light pt-10 text-gray-700  '> <Info className='w-7' /> Si vous possédez une salle en cours, la création d'une nouvelle salle supprimera l'ancienne automatiquement.</p>
+                    </div>
                 </form>
             </div>
         </div>
