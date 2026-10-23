@@ -9,8 +9,8 @@ export async function updateSession(request: NextRequest) {
   // With Fluid compute, don't put this client in a global environment
   // variable. Always create a new one on each request.
   const supabase = createServerClient(
-    process.env.QUIZTRO_SUPABASE_URL!,
-    process.env.QUIZTRO_SUPABASE_PUBLISHABLE_KEY!,
+    process.env.NEXT_PUBLIC_QUIZTRO_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_QUIZTRO_SUPABASE_PUBLISHABLE_KEY!,
     {
       cookies: {
         getAll() {
@@ -38,20 +38,30 @@ export async function updateSession(request: NextRequest) {
 
   // IMPORTANT: If you remove getClaims() and you use server-side rendering
   // with the Supabase client, your users may be randomly logged out.
-  const { data } = await supabase.auth.getClaims()
-
-  const user = data?.claims
-
+  const { data:{user} } = await supabase.auth.getUser()
+  const pathname = request.nextUrl.pathname
+  const estPageAuth = pathname.startsWith('/compte/creation') || pathname.startsWith('/compte/connexion')
+  const estVraiUser = !!user && !user.is_anonymous
+  
   if (
-    !user &&
-    !request.nextUrl.pathname.startsWith('/compte/connexion') &&
-    !request.nextUrl.pathname.startsWith('/compte/creation')
+    estVraiUser &&
+    estPageAuth
+  ) {
+    // no user, potentially respond by redirecting the user to the login page
+    const url = request.nextUrl.clone()
+    url.pathname = '/compte'
+    return NextResponse.redirect(url)
+  }
+  if (
+    !estVraiUser &&
+    pathname.startsWith('/compte') && !estPageAuth
   ) {
     // no user, potentially respond by redirecting the user to the login page
     const url = request.nextUrl.clone()
     url.pathname = '/compte/connexion'
     return NextResponse.redirect(url)
   }
+
 
   // IMPORTANT: You *must* return the supabaseResponse object as it is. If you're
   // creating a new response object with NextResponse.next() make sure to:

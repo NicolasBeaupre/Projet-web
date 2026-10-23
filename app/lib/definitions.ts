@@ -9,6 +9,37 @@ export type User = {
   password: string;
 };
 
+export type Salle = {
+  id?: string;
+  code: string;
+  createur_salle: string;
+  nbr_joueur_max: number;
+  nom_salle: string;
+  created_at?:string;
+  en_cours_de_jeu?:boolean;
+  id_quiz?:number;
+}
+
+export type VraiSalle = {
+  id: string;
+  code: string;
+  createur_salle: string;
+  nbr_joueur_max: number;
+  nom_salle: string;
+  created_at?:string;
+  en_cours_de_jeu?:boolean;
+}
+
+
+export type SalleJoueur = {
+  id:string;
+  created_at?:string;
+  id_salle:string;
+  points:number;
+  id_joueur:string;
+  nom_joueur:string;
+}
+
 export type Quiz = {
   nomQuiz: string,
   imageURL: string,
