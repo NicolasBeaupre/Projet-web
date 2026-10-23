@@ -16,7 +16,7 @@ export default async function ajouterQuiz(data: any) {
     ])
 }
 
-export async function ajouterNote(nomQuiz: any, nouvelleNote: number, user: any) {
+export async function ajouterNote(nomQuiz: any, nouvelleNote: number, utilisateurId: any) {
   const supabase = await createClient();
 
   const { data: noteQuiz } = await supabase
@@ -27,27 +27,36 @@ export async function ajouterNote(nomQuiz: any, nouvelleNote: number, user: any)
     .single();
 
 
-  const notesExistantes = noteQuiz?.notes
+  let notesExistantes = noteQuiz?.notes || []
 
-  // notesExistantes.forEach(note => {
-  //   if (note) {
+  const indexUtilisateur = notesExistantes.findIndex((note: {utilisateur: any; note:number}) => note.utilisateur === utilisateurId)
 
-  //   }
-  // });
+  let modifierNote = false
 
-  const noteActuelle = notesExistantes ? [...notesExistantes, nouvelleNote] : [nouvelleNote]
+  if (indexUtilisateur !== -1) {
+    if (nouvelleNote !== notesExistantes[indexUtilisateur].note) {
+      notesExistantes[indexUtilisateur].note = nouvelleNote
+      modifierNote = true
+    }
+  }
+  else{
+    notesExistantes.push({utilisateur: utilisateurId, note: nouvelleNote})
 
+    modifierNote = true
+  }
 
-  const { error } = await supabase
+  if (modifierNote) {
+    const { error } = await supabase
     .schema('public')
     .from('Quiz')
     .update(
       {
-        notes: noteActuelle,
+        notes: notesExistantes,
       }
     )
     .eq('nomQuiz', nomQuiz)
-    .single()
+  }
+
 }
 
 
