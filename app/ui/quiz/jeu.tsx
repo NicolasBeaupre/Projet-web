@@ -2,11 +2,12 @@
 import { CountdownCircleTimer } from "react-countdown-circle-timer";
 import { Quiz } from "@/app/lib/definitions";
 import { Button } from "@/components/ui/button";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { CircleX, Star, CircleCheck } from "lucide-react";
 import { ajouterNote } from "@/app/lib/action";
 import type { User } from '@supabase/supabase-js'
+import { ajouterTentativeQuiz } from "@/app/lib/action";
 
 
 export default function Jeu({ quiz, user }: { quiz: Quiz, user: User | null }) {
@@ -23,6 +24,16 @@ export default function Jeu({ quiz, user }: { quiz: Quiz, user: User | null }) {
     const [afficherQuestion, setAfficherQuestion] = useState(true)
 
     const [terminerQuiz, setTerminerQuiz] = useState(false)
+
+    const tentativeEnregistree = React.useRef(false)
+    useEffect(() => {
+        if (terminerQuiz && !tentativeEnregistree.current) {
+            let score = pointage
+            tentativeEnregistree.current = true 
+            if (quiz.questions[numeroQuestion].bonneReponse == reponse) score ++
+            ajouterTentativeQuiz(quiz.nomQuiz, score, quiz.questions.length)
+        }
+    }, [terminerQuiz])
 
     const handleNoteQuiz = async (data: any) => {
         setNoteQuiz(noteQuiz => data)
