@@ -153,7 +153,7 @@ export default function QuizForm() {
                     <div key={numReponse} className='flex items-center flex-wrap gap-5 m-5 border border-gray-300 border-8 rounded p-3'>
                       <div className='flex text-black'>
                         <input type='radio' value={`reponse${numReponse}`} defaultChecked={numReponse == 1}
-                          {...register(`questions.${index}.BonneReponse` as any, { required: true })} className='w-5 h-5' />
+                          {...register(`questions.${index}.bonneReponse` as any, { required: true })} className='w-5 h-5' />
                       </div>
                       <div className='w-full'>
                         <input {...register(`questions.${index}.reponse${numReponse}` as any, { required: "Le champ de réponse ne peut pas être vide" })} placeholder={`Réponse ${numReponse}...`}
