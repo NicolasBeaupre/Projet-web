@@ -3,7 +3,7 @@ import { Metadata } from 'next';
 import { createClient } from '@/lib/supabase/server'
 
 import ComponentsCreationQuizMultijoueur from '@/app/ui/quiz/creation-quiz-multijoueur';
-import Connexion from '../../ui/quiz/connexion-temporaire-quiz';
+
 import { redirect } from 'next/navigation';
 
 export const metadata: Metadata = {

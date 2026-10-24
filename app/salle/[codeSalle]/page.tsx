@@ -65,7 +65,7 @@ export default async function Page(props: PageProps<'/salle/[codeSalle]'>) {
     return (
         <div className="flex-1 flex">
 
-            {!erreur &&
+            {!erreur && salle &&
 
 
                 <ComponantSalle pSalle={salle[0]} joueursInitiaux={joueurs ?? []}

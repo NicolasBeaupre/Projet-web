@@ -6,7 +6,7 @@ import { Salle } from "@/app/lib/definitions"
 import { supprimerSalle, lireSalleIdParIdDuCreater } from "@/app/lib/action"
 const CaractereCode = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890'
 type SalleTemp = {
-    id: string,
+    id?: string,
     idCreateur?: string,
     nomLobby: string,
     nbrJoueurMax: string,

@@ -25,7 +25,8 @@ export default function ComponentsCreationQuizMultijoueur() {
 
     const router = useRouter()
 
-    const [nbrJoueur, setNbrJoueur] = useState('')
+    // const [nbrJoueur, setNbrJoueur] = useState('')
+    const [nbrJoueur, setNbrJoueur] = useState<string | null>(null);
     const [message, setMessage] = useState('')
     const [loading, setLoading] = useState(false)
     const [erreurNbrJoueur, setErreurNbrJoueur] = useState(false)
@@ -112,7 +113,7 @@ export default function ComponentsCreationQuizMultijoueur() {
                         <Field >
                             <FieldLabel className='text-lg font-bold' htmlFor='nbr-joueur-lobby-select'>Nombre de joueurs</FieldLabel>
 
-                            <Select value={nbrJoueur} onValueChange={setNbrJoueur} >
+                            <Select value={nbrJoueur} onValueChange={setNbrJoueur ?? ''} >
                                 <SelectTrigger id="nbr-joueur-lobby-select" aria-invalid={erreurNbrJoueur} >
                                     <SelectValue placeholder="Nombre de joueurs" />
                                 </SelectTrigger>
