@@ -15,10 +15,5 @@ export default async  function PageConnexion() {
 
   return (
     <Connexion></Connexion>
-
-
-
-
-
   )
 }
