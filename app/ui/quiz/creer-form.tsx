@@ -8,6 +8,8 @@ import Select from 'react-select';
 import ajouterQuiz from '@/app/lib/action';
 import { Quiz } from '@/app/lib/definitions';
 import type { User } from '@supabase/supabase-js'
+import React from 'react';
+import { useRouter } from 'next/navigation';
 
 const categoriesQuiz = [
   {label:"Science", value:"science"},
@@ -22,6 +24,8 @@ const categoriesQuiz = [
 {label:"Autre...", value:"autre"}, ]
 
 export default function QuizForm({ user }: {user: User | null }) {
+
+  const router = useRouter()
 
   const { control, register, handleSubmit, formState: { errors } } = useForm<Quiz>({
     defaultValues: {
@@ -40,10 +44,20 @@ export default function QuizForm({ user }: {user: User | null }) {
     control,
     name: 'questions',
   })
+  const [estDoublon, setEstDoublon] = React.useState(false)
 
   const onSubmit = async (data: any) => {
-    await ajouterQuiz(data);
+    if (!await ajouterQuiz(data, user?.id)) {
+      handleAffichage()
 
+    }
+    else{
+      router.push('/')
+    }
+
+  }
+  const handleAffichage = () => {
+    setEstDoublon(current => !current)
   }
   return (
     <div>
@@ -59,10 +73,13 @@ export default function QuizForm({ user }: {user: User | null }) {
                 {...register("nomQuiz", { required: "Le nom du quiz ne peut pas être vide" })}
                 placeholder="Quiztro..."
                 className={`peer block w-full rounded-md border border-gray-200 py-2 pl-10 text-sm outline-gray-200 focus:outline-black text-black
-              placeholder:text-gray-500 ${errors.nomQuiz ? "border-red-500 focus:outline-red-500" : "border-gray-200 focus:outline-black"}`}
+              placeholder:text-gray-500 ${errors.nomQuiz || estDoublon ? "border-red-500 focus:outline-red-500" : "border-gray-200 focus:outline-black"}`}
               />
               {errors.nomQuiz && (
                 <p className='text-red-500 text-sm'>{errors.nomQuiz.message}</p>
+              )}
+              {estDoublon && (
+                <p className='text-red-500 text-sm'>Ce nom est déjà pris, veuillez en choisir un nouveau</p>
               )}
 
             </div>
