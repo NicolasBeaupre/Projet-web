@@ -49,7 +49,7 @@ export default function Connexion() {
             if (error.message == "Invalid login credentials")
                 setMessage("La combinaison nom d'utilisateur, mot de passe n'existe pas.")
 
-
+            console.log(error.message)
             return
         }
 
@@ -81,7 +81,7 @@ export default function Connexion() {
                 <input className='rounded-lg border p-2' placeholder='Mot de passe' type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
 
                 {message && <p className="text-sm text-red-600">{message}</p>}
-                <button disabled={loading} className='rounded-lg bg-primary text-secondary border p-2' type="submit">{loading ? 'Connexion...' : "Se connecter"}</button>
+                <Button disabled={loading} className='rounded-lg bg-primary text-secondary border p-2' type="submit">{loading ? 'Connexion...' : "Se connecter"}</Button>
 
                 <Button variant="link" render={<Link href="/compte/creation" />} nativeButton={false}>Créer un compte</Button>
 
