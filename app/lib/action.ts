@@ -60,6 +60,22 @@ export async function ajouterNote(nomQuiz: any, nouvelleNote: number, utilisateu
 
 }
 
+export async function modifierPointage(nouveauPointage: number, utilisateurId: any, code_salle: any) {
+  const supabase = await createClient();
+
+  const { error } = await supabase
+    .schema('public')
+    .from('salle_joueur')
+    .update(
+      {
+        points: nouveauPointage,
+      }
+    )
+    .match({ id_salle: code_salle, id_joueur:utilisateurId })
+
+
+}
+
 
 
 export async function lireUnQuiz(data: any) {

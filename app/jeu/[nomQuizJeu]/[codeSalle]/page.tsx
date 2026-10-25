@@ -32,7 +32,7 @@ export default async function Page(props: PageProps<'/jeu/[nomQuizJeu]/[codeSall
     return (
         <div>
             <div>
-                <JeuMultijoueur quiz={quiz} salle={salle} joueurs={joueurs}/>
+                <JeuMultijoueur quiz={quiz} user={user} salle={salle} joueurs={joueurs}/>
             </div>
         </div>
     )

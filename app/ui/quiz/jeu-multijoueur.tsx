@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import React, { useState } from "react";
 import Link from "next/link";
 import { CircleX, Star, CircleCheck } from "lucide-react";
-import { ajouterNote } from "@/app/lib/action";
+import { ajouterNote, modifierPointage } from "@/app/lib/action";
 import type { User } from '@supabase/supabase-js'
 import { SalleJoueur, Salle } from "@/app/lib/definitions";
 
@@ -32,7 +32,7 @@ interface Multijoueur{
 
 }
 
-export default function JeuMultijoueur({ quiz, salle, joueurs }: { quiz: Quiz, salle: Salle | null,  joueurs: SalleJoueur[] | null }) {
+export default function JeuMultijoueur({ quiz, user, salle, joueurs }: { quiz: Quiz, user: User| null, salle: Salle | null,  joueurs: SalleJoueur[] | null }) {
 
 
     const [noteQuiz, setNoteQuiz] = React.useState(0)
@@ -57,7 +57,11 @@ export default function JeuMultijoueur({ quiz, salle, joueurs }: { quiz: Quiz, s
     }
 
     async function modifierNoteBD(data: any) {
-        // await ajouterNote(quiz.nomQuiz, data, user?.id)
+        await ajouterNote(quiz.nomQuiz, data, user?.id)
+    }
+
+    async function modifierPointageBD() {
+        await modifierPointage(pointage + 1, user?.id, salle?.code)
     }
 
     const handleAffichage = () => {
@@ -68,7 +72,9 @@ export default function JeuMultijoueur({ quiz, salle, joueurs }: { quiz: Quiz, s
     }
     const incrementerPointage = () => {
         setPointage(pointage + 1)
+        modifierPointageBD()
     }
+
 
     const incrementerNumeroQuestion = () => {
         setNumeroQuestion(numeroQuestion + 1)
@@ -224,7 +230,7 @@ export default function JeuMultijoueur({ quiz, salle, joueurs }: { quiz: Quiz, s
                         {quiz.questions[numeroQuestion].bonneReponse != reponse &&
                             <h2 className="text-xl font-bold">Votre score final: {pointage}/{numeroQuestion + 1}</h2>
                         }
-                        {/* {user !== undefined &&
+                        {user !== undefined &&
                             <div className="border-black border-10 bg-gray-100 w-1/2 h-40 rounded my-5">
                                 <h3 className="text-xl font-bold">Notez le quiz</h3>
                                 <div className="flex justify-center">
@@ -234,7 +240,7 @@ export default function JeuMultijoueur({ quiz, salle, joueurs }: { quiz: Quiz, s
                                 </div>
 
                             </div>
-                        } */}
+                        }
                         <Link href={'/'}>
                             <Button type="button" className="my-5 w-100 h-20 text-lg font-bold">Retour à l'accueil</Button>
                         </Link>
