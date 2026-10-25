@@ -120,6 +120,7 @@ export async function lireSalle(code: string) {
     .from('salle')
     .select()
     .match({ code: code })
+    .single()
 
   return salle
 
@@ -175,6 +176,7 @@ export async function lireSalleJoueur(id_salle: string) {
     .from('salle_joueur')
     .select()
     .match({ id_salle: id_salle })
+
 
   return salle
 
