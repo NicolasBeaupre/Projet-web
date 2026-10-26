@@ -43,7 +43,7 @@ export default async function Page(props: PageProps<'/categorie/[nomCategorie]'>
                         let nbrNote = 0
                         if (i.notes !== null) {
 
-                            i.notes.forEach(n => {
+                            i.notes.forEach((n:{note:number}) => {
                                 noteTotal += n.note
                             });
                             moyenneNote = Math.ceil(noteTotal / i.notes.length)
