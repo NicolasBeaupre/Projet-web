@@ -263,3 +263,20 @@ export async function supprimerSalle( id_salle: string) {
   revalidatePath('/', 'layout')
 }
 
+export async function ajouterTentativeQuiz(quiz_nom:string, score:number, nombre_question:number){
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) throw new Error("Vous devez être connecté afin d'effectuer cette action.")
+  
+  const quiz = await lireUnQuiz(quiz_nom)
+  if (!quiz) throw new Error("Ce quiz n'existe pas.")
+  const {error} = await supabase.from('historique_joueurs').insert({
+    id_joueur:user.id,
+    id_quiz:quiz.id,
+    score:score,
+    nbr_question:nombre_question,
+    nom_quiz:quiz_nom
+  })
+
+  revalidatePath('/compte')
+}
