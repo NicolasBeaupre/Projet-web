@@ -2,8 +2,20 @@
 import { createClient } from '@/lib/supabase/server';
 import { Salle } from './definitions';
 import { revalidatePath } from 'next/cache'
-export default async function ajouterQuiz(data: any) {
+
+
+export default async function ajouterQuiz(data: any, utilisateurId: any) {
   const supabase = await createClient();
+  const { data: quiz } = await supabase
+    .schema('public')
+    .from('Quiz')
+    .select('nomQuiz')
+    .eq('nomQuiz', data.nomQuiz)
+    .single();
+
+  if (quiz) {
+    return false
+  }
   const { error } = await supabase
     .schema('public')
     .from('Quiz')
@@ -13,8 +25,14 @@ export default async function ajouterQuiz(data: any) {
         imageURL: data.imageURL,
         categorie: data.categorie,
         questions: data.questions,
+        createur: utilisateurId
       }
     ])
+
+
+  return true
+
+
 }
 
 export async function ajouterNote(nomQuiz: any, nouvelleNote: number, utilisateurId: any) {
