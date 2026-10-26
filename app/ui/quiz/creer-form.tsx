@@ -7,6 +7,9 @@ import { useForm, useFieldArray, Controller } from 'react-hook-form';
 import Select from 'react-select';
 import ajouterQuiz from '@/app/lib/action';
 import { Quiz } from '@/app/lib/definitions';
+import type { User } from '@supabase/supabase-js'
+import React from 'react';
+import { useRouter } from 'next/navigation';
 
 const categoriesQuiz = [
   {label:"Science", value:"science"},
@@ -20,7 +23,9 @@ const categoriesQuiz = [
 {label:"Animaux", value:"animaux"},
 {label:"Autre...", value:"autre"}, ]
 
-export default function QuizForm() {
+export default function QuizForm({ user }: {user: User | null }) {
+
+  const router = useRouter()
 
   const { control, register, handleSubmit, formState: { errors } } = useForm<Quiz>({
     defaultValues: {
@@ -29,7 +34,9 @@ export default function QuizForm() {
       categorie: '',
       questions: [
         { titre: '', reponse1: '', reponse2: '', reponse3: '', reponse4: '', bonneReponse: 'reponse1' }
-      ]
+      ],
+      notes:[],
+      createur:'',
     }
   })
 
@@ -37,8 +44,20 @@ export default function QuizForm() {
     control,
     name: 'questions',
   })
+  const [estDoublon, setEstDoublon] = React.useState(false)
+
   const onSubmit = async (data: any) => {
-    await ajouterQuiz(data);
+    if (!await ajouterQuiz(data, user?.id)) {
+      handleAffichage()
+
+    }
+    else{
+      router.push('/')
+    }
+
+  }
+  const handleAffichage = () => {
+    setEstDoublon(current => !current)
   }
   return (
     <div>
@@ -54,10 +73,13 @@ export default function QuizForm() {
                 {...register("nomQuiz", { required: "Le nom du quiz ne peut pas être vide" })}
                 placeholder="Quiztro..."
                 className={`peer block w-full rounded-md border border-gray-200 py-2 pl-10 text-sm outline-gray-200 focus:outline-black text-black
-              placeholder:text-gray-500 ${errors.nomQuiz ? "border-red-500 focus:outline-red-500" : "border-gray-200 focus:outline-black"}`}
+              placeholder:text-gray-500 ${errors.nomQuiz || estDoublon ? "border-red-500 focus:outline-red-500" : "border-gray-200 focus:outline-black"}`}
               />
               {errors.nomQuiz && (
                 <p className='text-red-500 text-sm'>{errors.nomQuiz.message}</p>
+              )}
+              {estDoublon && (
+                <p className='text-red-500 text-sm'>Ce nom est déjà pris, veuillez en choisir un nouveau</p>
               )}
 
             </div>
@@ -77,7 +99,7 @@ export default function QuizForm() {
               <label className="mb-2 block text-lg font-medium text-black">
                 Choisir la catégorie du quiz
               </label>
-              <Controller
+              {/* <Controller
                 control={control}
                 name="categorie"
                 rules={{ required: true }}
@@ -86,7 +108,7 @@ export default function QuizForm() {
                     instanceId={"quiz"}
                       options={categoriesQuiz}
                       menuPlacement="auto"
-                      placeholder="Sélectionnez une catégorie ..."
+                      placeholder="Sélectionner une catégorie ..."
                       styles={{
                         control: (baseStyles, state) => ({
                           ...baseStyles,
@@ -96,7 +118,42 @@ export default function QuizForm() {
                         option: (baseStyles) => ({
                           ...baseStyles,
                           color: 'black'
+                        })
+                      }}
+                      isSearchable={false}
+
+                      value={categoriesQuiz.find((option) => option.value == field.value)}
+
+                      onChange={(optionSelectionne) =>{field.onChange(optionSelectionne ? optionSelectionne.value : "")}}
+
+                      name={field.name}
+
+                    />
+                )
+                }
+              /> */}
+              <Controller
+                control={control}
+                name="categorie"
+                rules={{ required: true }}
+                render={({field}) =>(
+                    <Select
+                    instanceId={"quiz"}
+                      options={categoriesQuiz}
+                      menuPlacement="auto"
+                      placeholder="Sélectionner une catégorie ..."
+                      styles={{
+                        control: (baseStyles, state) => ({
+                          ...baseStyles,
+                          borderColor: errors.categorie ? 'red' : 'black',
+                          color: state.isFocused ? 'black' : 'grey',
+
                         }),
+                        option: (baseStyles, state) => ({
+                          ...baseStyles,
+                          color: state.isFocused ? 'black' : 'grey',
+                          boxShadow: state.isFocused ? 'black' : 'red',
+                        })
                       }}
                       isSearchable={false}
 
@@ -110,6 +167,13 @@ export default function QuizForm() {
                 )
                 }
               />
+              {errors.categorie && errors.categorie.type === "required" ? (
+                <div>
+                  <span className="text-red-500">
+                    {"Veuillez sélectionner une catégorie !"}
+                  </span>
+                </div>
+              ) : null}
 
 
             </div>
@@ -179,8 +243,8 @@ export default function QuizForm() {
               <span className="sr-only text-black">Ajouter une question</span>
               <PlusIcon className="w-5 text-black" />
             </button>
-            <button type='submit'
-              className="rounded-md border p-2 hover:bg-gray-100 text-black">Terminer la création</button>
+              <button type='submit'
+                className="rounded-md border p-2 hover:bg-gray-100 text-black">Terminer la création</button>
           </div>
         </div>
 
