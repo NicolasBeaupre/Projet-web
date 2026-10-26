@@ -280,3 +280,32 @@ export async function ajouterTentativeQuiz(quiz_nom:string, score:number, nombre
 
   revalidatePath('/compte')
 }
+
+export async function lireCategoriesQuiz() {
+  const supabase = await createClient();
+  const { data:categorie, error } = await supabase
+    .schema('public')
+    .from('Quiz')
+    .select('categorie').order('categorie')
+
+  if (categorie == null)
+    return null
+  return Array.from(new Set(categorie.map((q) => q.categorie)));
+
+}
+
+export async function lireLesQuizDUneCategorie(categorie:string) {
+  const supabase = await createClient();
+
+  const { data:quiz, error } = await supabase
+    .schema('public')
+    .from('Quiz')
+    .select('*').match({categorie:categorie})
+
+
+  return quiz
+
+}
+
+
+
