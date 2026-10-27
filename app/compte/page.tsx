@@ -120,7 +120,7 @@ export default async function Compte({ searchParams,
                                         <div>Le quiz a été supprimé</div>}
                                     {i.id_quiz !== null &&
                                         <a
-                                            href={`/jeu/${i.nom_quiz}`}
+                                            href={`/jeu/${i.id}`}
                                             className={cn(buttonVariants(), 'text-2xl h-12')}
                                         >
                                             Jouer
