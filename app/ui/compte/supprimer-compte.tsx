@@ -45,7 +45,7 @@ export function SupprimerCompteComponent() {
                         </DialogFooter>
                     
                 </DialogContent>
-                {/* <Button disabled={pending} onClick={() => { if (confirm('This permanently deletes your account and data. Continue?')) { startTransition(() => supprimerCompte()) } }} variant={'destructive'}>Supprimer </Button> */}
+               
             </Dialog>
 
 

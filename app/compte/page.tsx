@@ -10,14 +10,14 @@ import { cn } from "@/lib/utils"
 
 import { ChevronRight } from 'lucide-react';
 import { ChevronLeft } from 'lucide-react';
-
+import { SupprimerQuizComponent } from '../ui/quiz/supprimer-quiz';
 import { SupprimerCompteComponent } from '../ui/compte/supprimer-compte';
 export const metadata: Metadata = {
     title: 'Mon Compte',
 };
 export default async function Compte({ searchParams,
 }: {
-    searchParams: Promise<{ page?: string }>
+    searchParams: Promise<{ page?: string, pageQuiz?: string }>
 }) {
 
     const supabase = await createClient();
@@ -55,6 +55,16 @@ export default async function Compte({ searchParams,
     const totalPages = Math.max(1, Math.ceil((count ?? 0) / nbrElement))
     const aPagePrecedente = pageCourrante > 1
     const aProchainePage = pageCourrante < totalPages
+
+    const { pageQuiz } = await searchParams
+    const pageCourranteMesQuiz = Math.max(1, Number(pageQuiz) || 1)
+    const aPartirDeMesQuiz = (pageCourranteMesQuiz - 1) * nbrElement
+    const jusquaMesQuiz = aPartirDeMesQuiz + nbrElement - 1
+    const { data: mesQuiz, count: countMesQuiz } = await supabase.from('Quiz').select('*', { count: 'exact' }).match({ createur: user.id }).order('created_at', { ascending: false }).range(aPartirDeMesQuiz, jusquaMesQuiz)
+
+    const totalPagesMesQuiz = Math.max(1, Math.ceil((countMesQuiz ?? 0) / nbrElement))
+    const aPagePrecedenteMesQuiz = pageCourranteMesQuiz > 1
+    const aProchainePageMesQuiz = pageCourranteMesQuiz < totalPagesMesQuiz
     return (
         <div className=" flex justify-center ">
 
@@ -87,7 +97,7 @@ export default async function Compte({ searchParams,
                         <hr></hr>
                         <div className='flex flex-wrap justify-center gap-10'>
                             <DialogModifierMotDePasse user={user}></DialogModifierMotDePasse>
-                            <SupprimerCompteComponent/>
+                            <SupprimerCompteComponent />
                         </div>
                     </div>
                 </div>
@@ -106,12 +116,16 @@ export default async function Compte({ searchParams,
 
                                     <p className='text-lg '>Votre score : {i.score}/{i.nbr_question}</p>
                                     <time>{new Date(i.created_at).toLocaleDateString()}</time>
-                                    <a
-                                        href={`/jeu/${i.nom_quiz}`}
-                                        className={cn(buttonVariants(), 'text-2xl h-12')}
-                                    >
-                                        Jouer
-                                    </a>
+                                    {i.id_quiz == null &&
+                                        <div>Le quiz a été supprimé</div>}
+                                    {i.id_quiz !== null &&
+                                        <a
+                                            href={`/jeu/${i.nom_quiz}`}
+                                            className={cn(buttonVariants(), 'text-2xl h-12')}
+                                        >
+                                            Jouer
+                                        </a>
+                                    }
 
                                 </li>
                             ))}
@@ -119,10 +133,51 @@ export default async function Compte({ searchParams,
                         </ul>
                         <span className='flex items-center'>
 
-                            <a href={`/compte?page=${pageCourrante - 1}#historique`} className={cn(buttonVariants({ variant: 'link' }), !aPagePrecedente ? 'hidden' : '')}><ChevronLeft />Précédent</a>
-                            <a href={`/compte?page=${pageCourrante + 1}#historique`} className={cn(buttonVariants({ variant: 'link' }), !aProchainePage ? 'hidden' : '')}>Prochain<ChevronRight /></a>
+                            <a href={`/compte?page=${pageCourrante - 1}&pageQuiz=${pageCourranteMesQuiz}#historique`} className={cn(buttonVariants({ variant: 'link' }), !aPagePrecedente ? 'hidden' : '')}><ChevronLeft />Précédent</a>
+                            <a href={`/compte?page=${pageCourrante + 1}&pageQuiz=${pageCourranteMesQuiz}#historique`} className={cn(buttonVariants({ variant: 'link' }), !aProchainePage ? 'hidden' : '')}>Prochain<ChevronRight /></a>
                         </span>
                     </div>
+
+                </div>
+                <div >
+                    <h2 className='text-2xl font-bold mb-10'>Mes quiz</h2>
+                    <div className='bg-gray-300 w-full p-3 justify-center items-center rounded-2xl flex gap-5 flex-col'>
+
+                        <ul className='bg-gray-300 w-full p-3 justify-center rounded-2xl flex gap-5 flex-wrap'>
+
+                            {mesQuiz?.map((i) => (
+                                <li key={i.id} className='flex flex-col justify-between border-2 p-3 bg-secondary rounded-2xl  gap-5 w-80'>
+                                    <h3 className='text-2xl wrap-break-word'>{i.nomQuiz}</h3>
+
+
+                                    <div>créé le :  <time>{new Date(i.created_at).toLocaleDateString()}</time></div>
+
+                                    <a
+                                        href={`/jeu/${i.nomQuiz}`}
+                                        className={cn(buttonVariants(), 'text-2xl h-12')}
+                                    >
+                                        Jouer
+                                    </a>
+                                    <SupprimerQuizComponent id_quiz={i.id} id_user={user.id} />
+
+                                </li>
+                            ))}
+                            {mesQuiz?.length == 0 &&
+                                <div className='py-10'>
+
+                                    <p className=' py-4 text-2xl'>Vous n'avez pas encore créé de quiz</p>
+                                    <a href='/creation-quiz' className={cn(buttonVariants(), 'text-2xl h-12')}>Créer en un!</a>
+                                </div>
+                            }
+
+                        </ul>
+                        <span className='flex items-center'>
+
+                            <a href={`/compte?page=${pageCourrante}&pageQuiz=${pageCourranteMesQuiz - 1}#mes-quiz`} className={cn(buttonVariants({ variant: 'link' }), !aPagePrecedenteMesQuiz ? 'hidden' : '')}><ChevronLeft />Précédent</a>
+                            <a href={`/compte?page=${pageCourrante}&pageQuiz=${pageCourranteMesQuiz + 1}#mes-quiz`} className={cn(buttonVariants({ variant: 'link' }), !aProchainePageMesQuiz ? 'hidden' : '')}>Prochain<ChevronRight /></a>
+                        </span>
+                    </div>
+
                 </div>
             </div>
         </div>
