@@ -120,7 +120,7 @@ export default async function Compte({ searchParams,
                                         <div>Le quiz a été supprimé</div>}
                                     {i.id_quiz !== null &&
                                         <a
-                                            href={`/jeu/${i.id}`}
+                                            href={`/jeu/${i.id_quiz}`}
                                             className={cn(buttonVariants(), 'text-2xl h-12')}
                                         >
                                             Jouer
@@ -153,7 +153,7 @@ export default async function Compte({ searchParams,
                                     <div>créé le :  <time>{new Date(i.created_at).toLocaleDateString()}</time></div>
 
                                     <a
-                                        href={`/jeu/${i.nomQuiz}`}
+                                        href={`/jeu/${i.id}`}
                                         className={cn(buttonVariants(), 'text-2xl h-12')}
                                     >
                                         Jouer
