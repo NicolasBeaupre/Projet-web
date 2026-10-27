@@ -2,6 +2,7 @@
 import { createClient } from '@/lib/supabase/server';
 import { Salle } from './definitions';
 import { revalidatePath } from 'next/cache'
+import { redirect } from 'next/navigation';
 
 
 export default async function ajouterQuiz(data: any, utilisateurId: any) {
@@ -96,6 +97,21 @@ export async function lireUnQuiz(data: any) {
   }
 
   return donneeQuiz
+}
+
+//Supprime un joueurs d'une salle
+export async function supprimerQuiz(id_joueur: string, id_quiz: string) {
+  const supabase = await createClient();
+  const {data, error:authErreur} = await supabase.auth.getUser()
+  if (authErreur || !data.user) throw new Error("Vous devez être connecté afin d'effectuer cette action.")
+  if( data.user.id !== id_joueur) throw new Error("Vous devez être connecté au compte ayant créé ce quiz, afin d'effectuer cette action.")
+  const { error } = await supabase
+    .schema('public')
+    .from('Quiz')
+    .delete().match({ createur: id_joueur, id: id_quiz })
+
+    if(error) throw new Error(error.message)
+    else redirect("/compte")
 }
 
 
