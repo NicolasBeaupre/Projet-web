@@ -29,9 +29,9 @@ export default function Jeu({ quiz, user }: { quiz: Quiz, user: User | null }) {
     useEffect(() => {
         if (terminerQuiz && !tentativeEnregistree.current) {
             let score = pointage
-            tentativeEnregistree.current = true 
+            tentativeEnregistree.current = true
             if (quiz.questions[numeroQuestion].bonneReponse == reponse) score ++
-            ajouterTentativeQuiz(quiz.nomQuiz, score, quiz.questions.length)
+            ajouterTentativeQuiz(Number(quiz.id), score, quiz.questions.length)
         }
     }, [terminerQuiz])
 
@@ -45,7 +45,7 @@ export default function Jeu({ quiz, user }: { quiz: Quiz, user: User | null }) {
     }
 
     async function modifierNoteBD(data: any) {
-        await ajouterNote(quiz.nomQuiz, data, user?.id)
+        await ajouterNote(quiz.id, data, user?.id)
     }
 
     const handleAffichage = () => {
@@ -64,7 +64,7 @@ export default function Jeu({ quiz, user }: { quiz: Quiz, user: User | null }) {
 
     const terminerQuestion = (data: any) => {
         handleReponse(data)
-        if (reponse === quiz.questions[numeroQuestion].bonneReponse) {
+        if (`reponse${data}` === quiz.questions[numeroQuestion].bonneReponse) {
             incrementerPointage()
         }
         handleAffichage()
@@ -140,7 +140,7 @@ export default function Jeu({ quiz, user }: { quiz: Quiz, user: User | null }) {
                                         <h2 className="text-2xl font-bold mx-4">Bonne réponse !</h2>
                                         <p><CircleCheck size={30} /></p>
                                     </div>
-                                    <p className="text-2xl font-bold">Votre score : {pointage + 1}/{numeroQuestion + 1}</p>
+                                    <p className="text-2xl font-bold">Votre score : {pointage}/{numeroQuestion + 1}</p>
                                 </div>
                             }
                             {quiz.questions[numeroQuestion].bonneReponse != reponse &&

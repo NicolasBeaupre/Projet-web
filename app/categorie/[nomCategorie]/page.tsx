@@ -87,7 +87,7 @@ export default async function Page(props: PageProps<'/categorie/[nomCategorie]'>
                                     <p>({nbrNote} note(s))</p>
                                 </div>
                                 <a
-                                    href={`/jeu/${i.nomQuiz}`}
+                                    href={`/jeu/${i.id}`}
                                     className={cn(buttonVariants(), 'text-2xl h-12')}
                                 >
                                     Jouer

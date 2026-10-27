@@ -7,11 +7,12 @@ import { redirect } from 'next/navigation';
 
 export default async function ajouterQuiz(data: any, utilisateurId: any) {
   const supabase = await createClient();
+  const nomQuiz = data.nomQuiz.trim()
   const { data: quiz } = await supabase
     .schema('public')
     .from('Quiz')
     .select('nomQuiz')
-    .eq('nomQuiz', data.nomQuiz)
+    .eq('nomQuiz', nomQuiz)
     .single();
 
   if (quiz) {
@@ -22,7 +23,7 @@ export default async function ajouterQuiz(data: any, utilisateurId: any) {
     .from('Quiz')
     .insert([
       {
-        nomQuiz: data.nomQuiz,
+        nomQuiz: nomQuiz,
         imageURL: data.imageURL,
         categorie: data.categorie,
         questions: data.questions,
@@ -36,14 +37,14 @@ export default async function ajouterQuiz(data: any, utilisateurId: any) {
 
 }
 
-export async function ajouterNote(nomQuiz: any, nouvelleNote: number, utilisateurId: any) {
+export async function ajouterNote(idQuiz: Number, nouvelleNote: number, utilisateurId: any) {
   const supabase = await createClient();
 
   const { data: noteQuiz } = await supabase
     .schema('public')
     .from('Quiz')
     .select('notes')
-    .eq('nomQuiz', nomQuiz)
+    .eq('id', idQuiz)
     .single();
 
 
@@ -74,21 +75,20 @@ export async function ajouterNote(nomQuiz: any, nouvelleNote: number, utilisateu
         notes: notesExistantes,
       }
     )
-    .eq('nomQuiz', nomQuiz)
+    .eq('id', idQuiz)
   }
 
 }
 
 
 
-export async function lireUnQuiz(data: any) {
+export async function lireUnQuiz(data: number) {
   const supabase = await createClient()
-  console.log(data)
   const { data: donneeQuiz, error } = await supabase
     .schema('public')
     .from('Quiz')
     .select()
-    .match({ nomQuiz: data })
+    .match({ id: data })
     .single()
 
   if (error) {
@@ -279,19 +279,21 @@ export async function supprimerSalle( id_salle: string) {
   revalidatePath('/', 'layout')
 }
 
-export async function ajouterTentativeQuiz(quiz_nom:string, score:number, nombre_question:number){
+export async function ajouterTentativeQuiz(quiz_id:number, score:number, nombre_question:number){
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) throw new Error("Vous devez être connecté afin d'effectuer cette action.")
-  
-  const quiz = await lireUnQuiz(quiz_nom)
+
+  const quiz = await lireUnQuiz(quiz_id)
+  console.log(quiz)
+  console.log(quiz_id)
   if (!quiz) throw new Error("Ce quiz n'existe pas.")
   const {error} = await supabase.from('historique_joueurs').insert({
     id_joueur:user.id,
     id_quiz:quiz.id,
     score:score,
     nbr_question:nombre_question,
-    nom_quiz:quiz_nom
+    nom_quiz:quiz.nomQuiz
   })
 
   revalidatePath('/compte')
