@@ -41,6 +41,7 @@ export type SalleJoueur = {
 }
 
 export type Quiz = {
+  id: number;
   nomQuiz: string;
   imageURL: string;
   categorie: string;
