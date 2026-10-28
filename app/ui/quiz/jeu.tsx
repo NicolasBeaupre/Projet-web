@@ -2,11 +2,12 @@
 import { CountdownCircleTimer } from "react-countdown-circle-timer";
 import { Quiz } from "@/app/lib/definitions";
 import { Button } from "@/components/ui/button";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { CircleX, Star, CircleCheck } from "lucide-react";
 import { ajouterNote } from "@/app/lib/action";
 import type { User } from '@supabase/supabase-js'
+import { ajouterTentativeQuiz } from "@/app/lib/action";
 
 
 export default function Jeu({ quiz, user }: { quiz: Quiz, user: User | null }) {
@@ -24,6 +25,16 @@ export default function Jeu({ quiz, user }: { quiz: Quiz, user: User | null }) {
 
     const [terminerQuiz, setTerminerQuiz] = useState(false)
 
+    const tentativeEnregistree = React.useRef(false)
+    useEffect(() => {
+        if (terminerQuiz && !tentativeEnregistree.current) {
+            let score = pointage
+            tentativeEnregistree.current = true
+            // if (quiz.questions[numeroQuestion].bonneReponse == reponse) score +
+            ajouterTentativeQuiz(Number(quiz.id), score, quiz.questions.length)
+        }
+    }, [terminerQuiz])
+
     const handleNoteQuiz = async (data: any) => {
         setNoteQuiz(noteQuiz => data)
         modifierNoteBD(data)
@@ -34,7 +45,7 @@ export default function Jeu({ quiz, user }: { quiz: Quiz, user: User | null }) {
     }
 
     async function modifierNoteBD(data: any) {
-        await ajouterNote(quiz.nomQuiz, data, user?.id)
+        await ajouterNote(quiz.id, data, user?.id)
     }
 
     const handleAffichage = () => {
@@ -53,7 +64,7 @@ export default function Jeu({ quiz, user }: { quiz: Quiz, user: User | null }) {
 
     const terminerQuestion = (data: any) => {
         handleReponse(data)
-        if (reponse === quiz.questions[numeroQuestion].bonneReponse) {
+        if (`reponse${data}` === quiz.questions[numeroQuestion].bonneReponse) {
             incrementerPointage()
         }
         handleAffichage()
@@ -129,7 +140,7 @@ export default function Jeu({ quiz, user }: { quiz: Quiz, user: User | null }) {
                                         <h2 className="text-2xl font-bold mx-4">Bonne réponse !</h2>
                                         <p><CircleCheck size={30} /></p>
                                     </div>
-                                    <p className="text-2xl font-bold">Votre score : {pointage + 1}/{numeroQuestion + 1}</p>
+                                    <p className="text-2xl font-bold">Votre score : {pointage}/{numeroQuestion + 1}</p>
                                 </div>
                             }
                             {quiz.questions[numeroQuestion].bonneReponse != reponse &&
@@ -196,7 +207,7 @@ export default function Jeu({ quiz, user }: { quiz: Quiz, user: User | null }) {
                     <div className="flex justify-center items-center my-20 flex-col text-center">
                         <h2 className="text-2xl font-bold my-3">Quiz terminé !</h2>
                         {quiz.questions[numeroQuestion].bonneReponse == reponse &&
-                            <h2 className="text-2xl font-bold">Votre score final : {pointage + 1}/{numeroQuestion + 1}</h2>
+                            <h2 className="text-2xl font-bold">Votre score final : {pointage}/{numeroQuestion + 1}</h2>
                         }
                         {quiz.questions[numeroQuestion].bonneReponse != reponse &&
                             <h2 className="text-xl font-bold">Votre score final: {pointage}/{numeroQuestion + 1}</h2>

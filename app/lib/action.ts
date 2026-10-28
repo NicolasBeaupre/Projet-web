@@ -2,29 +2,49 @@
 import { createClient } from '@/lib/supabase/server';
 import { Salle } from './definitions';
 import { revalidatePath } from 'next/cache'
-export default async function ajouterQuiz(data: any) {
+import { redirect } from 'next/navigation';
+
+
+export default async function ajouterQuiz(data: any, utilisateurId: any) {
   const supabase = await createClient();
+  const nomQuiz = data.nomQuiz.trim()
+  const { data: quiz } = await supabase
+    .schema('public')
+    .from('Quiz')
+    .select('nomQuiz')
+    .eq('nomQuiz', nomQuiz)
+    .single();
+
+  if (quiz) {
+    return false
+  }
   const { error } = await supabase
     .schema('public')
     .from('Quiz')
     .insert([
       {
-        nomQuiz: data.nomQuiz,
+        nomQuiz: nomQuiz,
         imageURL: data.imageURL,
         categorie: data.categorie,
         questions: data.questions,
+        createur: utilisateurId
       }
     ])
+
+
+  return true
+
+
 }
 
-export async function ajouterNote(nomQuiz: any, nouvelleNote: number, utilisateurId: any) {
+export async function ajouterNote(idQuiz: Number, nouvelleNote: number, utilisateurId: any) {
   const supabase = await createClient();
 
   const { data: noteQuiz } = await supabase
     .schema('public')
     .from('Quiz')
     .select('notes')
-    .eq('nomQuiz', nomQuiz)
+    .eq('id', idQuiz)
     .single();
 
 
@@ -55,7 +75,7 @@ export async function ajouterNote(nomQuiz: any, nouvelleNote: number, utilisateu
         notes: notesExistantes,
       }
     )
-    .eq('nomQuiz', nomQuiz)
+    .eq('id', idQuiz)
   }
 
 }
@@ -78,14 +98,13 @@ export async function modifierPointage(nouveauPointage: number, utilisateurId: a
 
 
 
-export async function lireUnQuiz(data: any) {
+export async function lireUnQuiz(data: number) {
   const supabase = await createClient()
-  console.log(data)
   const { data: donneeQuiz, error } = await supabase
     .schema('public')
     .from('Quiz')
     .select()
-    .match({ nomQuiz: data })
+    .match({ id: data })
     .single()
 
   if (error) {
@@ -94,6 +113,21 @@ export async function lireUnQuiz(data: any) {
   }
 
   return donneeQuiz
+}
+
+//Supprime un joueurs d'une salle
+export async function supprimerQuiz(id_joueur: string, id_quiz: string) {
+  const supabase = await createClient();
+  const {data, error:authErreur} = await supabase.auth.getUser()
+  if (authErreur || !data.user) throw new Error("Vous devez être connecté afin d'effectuer cette action.")
+  if( data.user.id !== id_joueur) throw new Error("Vous devez être connecté au compte ayant créé ce quiz, afin d'effectuer cette action.")
+  const { error } = await supabase
+    .schema('public')
+    .from('Quiz')
+    .delete().match({ createur: id_joueur, id: id_quiz })
+
+    if(error) throw new Error(error.message)
+    else redirect("/compte")
 }
 
 
@@ -262,4 +296,52 @@ export async function supprimerSalle( id_salle: string) {
 
   revalidatePath('/', 'layout')
 }
+
+export async function ajouterTentativeQuiz(quiz_id:number, score:number, nombre_question:number){
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) throw new Error("Vous devez être connecté afin d'effectuer cette action.")
+
+  const quiz = await lireUnQuiz(quiz_id)
+  console.log(quiz)
+  console.log(quiz_id)
+  if (!quiz) throw new Error("Ce quiz n'existe pas.")
+  const {error} = await supabase.from('historique_joueurs').insert({
+    id_joueur:user.id,
+    id_quiz:quiz.id,
+    score:score,
+    nbr_question:nombre_question,
+    nom_quiz:quiz.nomQuiz
+  })
+
+  revalidatePath('/compte')
+}
+
+export async function lireCategoriesQuiz() {
+  const supabase = await createClient();
+  const { data:categorie, error } = await supabase
+    .schema('public')
+    .from('Quiz')
+    .select('categorie').order('categorie')
+
+  if (categorie == null)
+    return null
+  return Array.from(new Set(categorie.map((q) => q.categorie)));
+
+}
+
+export async function lireLesQuizDUneCategorie(categorie:string) {
+  const supabase = await createClient();
+
+  const { data:quiz, error } = await supabase
+    .schema('public')
+    .from('Quiz')
+    .select('*').match({categorie:categorie})
+
+
+  return quiz
+
+}
+
+
 

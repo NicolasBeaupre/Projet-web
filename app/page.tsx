@@ -1,16 +1,37 @@
 import PageEnConstruction from '@/app/ui/construction';
 import PlaceholderContenue from '@/app/ui/placeholder-contenue'
-
-
-export default function Home() {
+import { Button, buttonVariants } from "@/components/ui/button"
+import { lireCategoriesQuiz } from './lib/action';
+import { cn } from 'cn';
+export default async function Home() {
   // throw new Error("bob")
+  const Categorie = await lireCategoriesQuiz()
   return (
     <div className="flex flex-col flex-1 items-center justify-center font-sans dark:bg-black">
       <main className="flex flex-1 w-full max-w-4xl  flex-col items-center justify-between py-20 bg-white dark:bg-black sm:items-start">
         {/* <PageEnConstruction /> */}
 
-        <PlaceholderContenue></PlaceholderContenue>
+       
+        <div className='flex flex-col justify-center w-full  gap-20'>
+          <div>
 
+            <h1 className='text-2xl font-bold text-center mb-5'>Catégories</h1>
+            <ul className='flex w-full justify-center gap-5 flex-wrap px-4'>
+            
+
+              {Categorie?.map((i) => (
+                <li key={i}>
+                  <a href={`/categorie/${i}`} className={cn(buttonVariants({}), 'w-30 h-15 text-lg')}>{i}</a>
+                </li>
+              ))}
+
+
+
+
+            </ul>
+          </div>
+
+        </div>
 
         {
 
