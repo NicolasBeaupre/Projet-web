@@ -15,7 +15,7 @@ export default async function Page(props: PageProps<'/jeu/[idQuiz]/[codeSalle]'>
     const {idQuiz} = await props.params
     const {codeSalle} = await props.params
 
-    const quiz =   await lireUnQuiz(nomQuizJeu)
+    const quiz =   await lireUnQuiz(Number(idQuiz))
     const salle =   await lireSalle(codeSalle)
     if (salle == null) {
         redirect('/creer-salle')
