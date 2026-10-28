@@ -207,7 +207,7 @@ export default function Jeu({ quiz, user }: { quiz: Quiz, user: User | null }) {
                     <div className="flex justify-center items-center my-20 flex-col text-center">
                         <h2 className="text-2xl font-bold my-3">Quiz terminé !</h2>
                         {quiz.questions[numeroQuestion].bonneReponse == reponse &&
-                            <h2 className="text-2xl font-bold">Votre score final : {pointage + 1}/{numeroQuestion + 1}</h2>
+                            <h2 className="text-2xl font-bold">Votre score final : {pointage}/{numeroQuestion + 1}</h2>
                         }
                         {quiz.questions[numeroQuestion].bonneReponse != reponse &&
                             <h2 className="text-xl font-bold">Votre score final: {pointage}/{numeroQuestion + 1}</h2>
