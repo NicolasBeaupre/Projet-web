@@ -30,7 +30,7 @@ export default function Jeu({ quiz, user }: { quiz: Quiz, user: User | null }) {
         if (terminerQuiz && !tentativeEnregistree.current) {
             let score = pointage
             tentativeEnregistree.current = true
-            if (quiz.questions[numeroQuestion].bonneReponse == reponse) score ++
+            // if (quiz.questions[numeroQuestion].bonneReponse == reponse) score +
             ajouterTentativeQuiz(Number(quiz.id), score, quiz.questions.length)
         }
     }, [terminerQuiz])
