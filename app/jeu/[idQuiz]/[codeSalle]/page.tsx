@@ -4,7 +4,7 @@ import { createClient } from '@/lib/supabase/server'
 import { redirect } from "next/navigation";
 import { SalleJoueur, Salle } from "@/app/lib/definitions";
 
-export default async function Page(props: PageProps<'/jeu/[nomQuizJeu]/[codeSalle]'>){
+export default async function Page(props: PageProps<'/jeu/[idQuiz]/[codeSalle]'>){
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser()
     if (user == null || user.is_anonymous) {
@@ -12,7 +12,7 @@ export default async function Page(props: PageProps<'/jeu/[nomQuizJeu]/[codeSall
             redirect('/compte/connexion')
         }
 
-    const {nomQuizJeu} = await props.params
+    const {idQuiz} = await props.params
     const {codeSalle} = await props.params
 
     const quiz =   await lireUnQuiz(nomQuizJeu)
