@@ -80,22 +80,6 @@ export async function ajouterNote(idQuiz: Number, nouvelleNote: number, utilisat
 
 }
 
-export async function modifierPointage(nouveauPointage: number, utilisateurId: any, code_salle: any) {
-  const supabase = await createClient();
-
-  const { error } = await supabase
-    .schema('public')
-    .from('salle_joueur')
-    .update(
-      {
-        points: nouveauPointage,
-      }
-    )
-    .match({ id_salle: code_salle, id_joueur:utilisateurId })
-
-
-}
-
 
 
 export async function lireUnQuiz(data: number) {
@@ -342,6 +326,51 @@ export async function lireLesQuizDUneCategorie(categorie:string) {
   return quiz
 
 }
+// Quiz multijoueur
+
+// Pointage
+
+export async function modifierPointage(nouveauPointage: number, utilisateurId: any, code_salle: any) {
+  const supabase = await createClient();
+
+  const { error } = await supabase
+    .schema('public')
+    .from('salle_joueur')
+    .update(
+      {
+        points: nouveauPointage,
+      }
+    )
+    .match({ id_salle: code_salle, id_joueur:utilisateurId })
 
 
+}
+
+export async function lirePointage(code_salle: string) {
+  const supabase = await createClient();
+
+  const { data: points, error } = await supabase
+    .schema('public')
+    .from('salle_joueur')
+    .select()
+    .match({ id_salle: code_salle })
+
+  return points
+}
+
+// Temps BD
+export async function lireTempsRestants(code_salle: string) {
+
+  const supabase = await createClient();
+
+  const { data: temps, error } = await supabase
+    .schema('public')
+    .from('salle_joueur')
+    .select('temps')
+    .match({ id_salle: code_salle })
+
+
+
+  return 30
+}
 

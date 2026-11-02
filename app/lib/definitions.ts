@@ -51,12 +51,3 @@ export type Quiz = {
   notes:[{note:number, utilisateur:string}];
   createur:string;
 }
-
-export type Questions = {
-  id:string;
-  titre:string;
-  reponse1:string;
-  reponse2:string;
-  reponse3:string;
-  reponse4:string;
-}

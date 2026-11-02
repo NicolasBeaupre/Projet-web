@@ -4,25 +4,25 @@ import { Quiz } from "@/app/lib/definitions";
 import { Button } from "@/components/ui/button";
 import React, { useState } from "react";
 import Link from "next/link";
-import { CircleX, Star, CircleCheck } from "lucide-react";
-import { ajouterNote, modifierPointage } from "@/app/lib/action";
+import { CircleX, Star, CircleCheck, Crown } from "lucide-react";
+import { ajouterNote, modifierPointage, lireTempsRestants, lirePointage } from "@/app/lib/action";
 import type { User } from '@supabase/supabase-js'
 import { SalleJoueur, Salle } from "@/app/lib/definitions";
 
 interface Joueur {
-    id:string;
-    nom:string;
-    reponse:string;
-    pointage:number;
+    id: string;
+    nom: string;
+    reponse: string;
+    pointage: number;
     rang: number;
 }
 
-interface Multijoueur{
+interface Multijoueur {
     idLobby: string | null;
-    proprietaire:string;
-    joueurs:Joueur[];
-    timer:number;
-    statusPartie: "salle" | "en cours" | "resultat" |"terminee";
+    proprietaire: string;
+    joueurs: Joueur[];
+    timer: number;
+    statusPartie: "salle" | "en cours" | "resultat" | "terminee";
     numeroQuestion: number;
 
     commencerTimer: () => void;
@@ -32,7 +32,7 @@ interface Multijoueur{
 
 }
 
-export default function JeuMultijoueur({ quiz, user, salle, joueurs }: { quiz: Quiz, user: User| null, salle: Salle | null,  joueurs: SalleJoueur[] | null }) {
+export default function JeuMultijoueur({ quiz, user, salle, joueurs }: { quiz: Quiz, user: User | null, salle: Salle | null, joueurs: SalleJoueur[] | null }) {
 
 
     const [noteQuiz, setNoteQuiz] = React.useState(0)
@@ -41,7 +41,11 @@ export default function JeuMultijoueur({ quiz, user, salle, joueurs }: { quiz: Q
 
     const [pointage, setPointage] = React.useState(0)
 
+    const [pointageSalle, setPointageSalle] = React.useState<Array<[number, string, string]>>([])
+
     const [reponse, setReponse] = React.useState("")
+
+    const [questionRepondu, setQuestionRepondu] = useState(false)
 
     const [afficherQuestion, setAfficherQuestion] = useState(true)
 
@@ -57,12 +61,10 @@ export default function JeuMultijoueur({ quiz, user, salle, joueurs }: { quiz: Q
     }
 
     async function modifierNoteBD(data: any) {
-        await ajouterNote(quiz.nomQuiz, data, user?.id)
+        await ajouterNote(quiz.id, data, user?.id)
     }
 
-    async function modifierPointageBD() {
-        await modifierPointage(pointage + 1, user?.id, salle?.code)
-    }
+
 
     const handleAffichage = () => {
         setAfficherQuestion(current => !current)
@@ -70,11 +72,6 @@ export default function JeuMultijoueur({ quiz, user, salle, joueurs }: { quiz: Q
     const handleTerminerQuiz = () => {
         setTerminerQuiz(current => !current)
     }
-    const incrementerPointage = () => {
-        setPointage(pointage + 1)
-        modifierPointageBD()
-    }
-
 
     const incrementerNumeroQuestion = () => {
         setNumeroQuestion(numeroQuestion + 1)
@@ -99,11 +96,44 @@ export default function JeuMultijoueur({ quiz, user, salle, joueurs }: { quiz: Q
     }
 
     const handleClick = async (data: any) => {
+        setQuestionRepondu(current => !current)
         terminerQuestion(data)
     }
     const handleTimer = () => {
         terminerQuestion("")
     }
+
+    // Pointage multi
+    async function modifierPointageBD() {
+        await modifierPointage(pointage + 1, user?.id, salle?.code)
+    }
+
+    const incrementerPointage = () => {
+        setPointage(pointage + 1)
+        modifierPointageBD()
+    }
+
+    const handlePointage = () => {
+        RegarderPointageBd()
+    }
+
+    async function RegarderPointageBd() {
+        const pointsBd = await lirePointage(String(salle?.code)) as SalleJoueur[] | null
+
+        const nouveauPointage: Array<[number, string, string]> = (pointsBd ?? []).map(pointage => [pointage.points, pointage.id_joueur, pointage.nom_joueur])
+
+        setPointageSalle(nouveauPointage);
+    }
+
+    // Temps BD
+    const handleTempsRestant = () => {
+        return RegarderTempsBd()
+
+    }
+    async function RegarderTempsBd() {
+        return await lireTempsRestants(String(salle?.code))
+    }
+
     return (
         <div>
             {afficherQuestion == true && terminerQuiz == false &&
@@ -112,6 +142,7 @@ export default function JeuMultijoueur({ quiz, user, salle, joueurs }: { quiz: Q
                         <CountdownCircleTimer
                             isPlaying
                             duration={30}
+                            initialRemainingTime={Number(handleTempsRestant())}
                             colors={['#22C55E', '#EAB308', '#EF4444']}
                             colorsTime={[30, 15, 0]}
                             size={120}
@@ -139,7 +170,7 @@ export default function JeuMultijoueur({ quiz, user, salle, joueurs }: { quiz: Q
                                 <div key={numReponse} className='flex items-center flex-wrap my-5 rounded'>
                                     <div className="peer block w-5/6 sm:h-50 h-25 rounded-md border border-gray-200 focus:outline-black text-black
                   placeholder:text-gray-500 text-center m-auto">
-                                        <Button type="button" className="w-full h-full text-lg font-bold" onClick={() => handleClick(numReponse)}>{(quiz.questions?.[numeroQuestion] as any)?.[`reponse${numReponse}`]}</Button>
+                                        <Button type="button" className="w-full h-full text-lg font-bold" disabled={questionRepondu} onClick={() => handleClick(numReponse)}>{(quiz.questions?.[numeroQuestion] as any)?.[`reponse${numReponse}`]}</Button>
                                     </div>
                                 </div>
                             ))}
@@ -152,25 +183,33 @@ export default function JeuMultijoueur({ quiz, user, salle, joueurs }: { quiz: Q
                 <div>
                     <div>
                         <div className="flex justify-center items-center my-20 flex-col text-center">
-                            {quiz.questions[numeroQuestion].bonneReponse == reponse &&
-                                <div className="text-green-700">
-                                    <div className="flex align-center justify-center">
+
+                            <div>
+                                {quiz.questions[numeroQuestion].bonneReponse == reponse &&
+                                    <div className="flex align-center justify-center text-green-700">
                                         <h2 className="text-2xl font-bold mx-4">Bonne réponse !</h2>
                                         <p><CircleCheck size={30} /></p>
                                     </div>
-                                    <p className="text-2xl font-bold">Votre score : {pointage + 1}/{numeroQuestion + 1}</p>
-                                </div>
-                            }
-                            {quiz.questions[numeroQuestion].bonneReponse != reponse &&
-                                <div className="text-red-700">
-                                    <div className="flex align-center justify-center">
+                                }
+                                {quiz.questions[numeroQuestion].bonneReponse != reponse &&
+                                    <div className="flex align-center justify-center text-red-700">
                                         <h2 className="text-2xl font-bold mx-4">Mauvaise réponse ! </h2>
                                         <p><CircleX size={30} /></p>
                                     </div>
-                                    <p className="text-2xl font-bold">Votre score : {pointage}/{numeroQuestion + 1}</p>
-                                </div>
-                            }
-                            <Button type="button" className="my-5 w-100 h-20 text-lg font-bold" onClick={prochaineQuestion}>Prochaine question</Button>
+                                }
+                                {pointageSalle.map((points, index) => (
+
+                                    <div key={index} className='flex items-center flex-wrap my-5 rounded'>
+                                        {points[1] == user?.id &&
+                                            <p className="text-2xl font-bold">{points[2]} {pointage}/{numeroQuestion + 1} <Crown size={30} /></p>
+                                        }
+                                        {points[1] != user?.id &&
+                                            <p className="text-2xl font-bold">{points[2]} {pointage}/{numeroQuestion + 1}  </p>
+                                        }
+                                    </div>
+                                ))}
+                            </div>
+
                         </div>
                         <div className="fixed flex justify-center my-5 top-15 right-5 sm:right-15">
                             <CountdownCircleTimer
