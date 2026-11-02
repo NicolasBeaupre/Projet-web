@@ -50,7 +50,7 @@ export async function ajouterNote(idQuiz: Number, nouvelleNote: number, utilisat
 
   let notesExistantes = noteQuiz?.notes || []
 
-  const indexUtilisateur = notesExistantes.findIndex((note: {utilisateur: any; note:number}) => note.utilisateur === utilisateurId)
+  const indexUtilisateur = notesExistantes.findIndex((note: { utilisateur: any; note: number }) => note.utilisateur === utilisateurId)
 
   let modifierNote = false
 
@@ -60,22 +60,22 @@ export async function ajouterNote(idQuiz: Number, nouvelleNote: number, utilisat
       modifierNote = true
     }
   }
-  else{
-    notesExistantes.push({utilisateur: utilisateurId, note: nouvelleNote})
+  else {
+    notesExistantes.push({ utilisateur: utilisateurId, note: nouvelleNote })
 
     modifierNote = true
   }
 
   if (modifierNote) {
     const { error } = await supabase
-    .schema('public')
-    .from('Quiz')
-    .update(
-      {
-        notes: notesExistantes,
-      }
-    )
-    .eq('id', idQuiz)
+      .schema('public')
+      .from('Quiz')
+      .update(
+        {
+          notes: notesExistantes,
+        }
+      )
+      .eq('id', idQuiz)
   }
 
 }
@@ -102,16 +102,16 @@ export async function lireUnQuiz(data: number) {
 //Supprime un joueurs d'une salle
 export async function supprimerQuiz(id_joueur: string, id_quiz: string) {
   const supabase = await createClient();
-  const {data, error:authErreur} = await supabase.auth.getUser()
+  const { data, error: authErreur } = await supabase.auth.getUser()
   if (authErreur || !data.user) throw new Error("Vous devez être connecté afin d'effectuer cette action.")
-  if( data.user.id !== id_joueur) throw new Error("Vous devez être connecté au compte ayant créé ce quiz, afin d'effectuer cette action.")
+  if (data.user.id !== id_joueur) throw new Error("Vous devez être connecté au compte ayant créé ce quiz, afin d'effectuer cette action.")
   const { error } = await supabase
     .schema('public')
     .from('Quiz')
     .delete().match({ createur: id_joueur, id: id_quiz })
 
-    if(error) throw new Error(error.message)
-    else redirect("/compte")
+  if (error) throw new Error(error.message)
+  else redirect("/compte")
 }
 
 
@@ -257,17 +257,17 @@ export async function supprimerJoueurSalle(id_joueur: string, id_salle: string) 
 }
 
 //Supprime tout les joueurs d'une salle
-export async function supprimerJoueursSalle( id_salle: string) {
+export async function supprimerJoueursSalle(id_salle: string) {
   const supabase = await createClient();
   const { error } = await supabase
     .schema('public')
     .from('salle_joueur')
-    .delete().match({ id_salle: id_salle})
+    .delete().match({ id_salle: id_salle })
 
 }
 
 
-export async function supprimerSalle( id_salle: string) {
+export async function supprimerSalle(id_salle: string) {
 
   const supabase = await createClient();
   await supprimerJoueursSalle(id_salle)
@@ -281,7 +281,7 @@ export async function supprimerSalle( id_salle: string) {
   revalidatePath('/', 'layout')
 }
 
-export async function ajouterTentativeQuiz(quiz_id:number, score:number, nombre_question:number){
+export async function ajouterTentativeQuiz(quiz_id: number, score: number, nombre_question: number) {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) throw new Error("Vous devez être connecté afin d'effectuer cette action.")
@@ -290,12 +290,12 @@ export async function ajouterTentativeQuiz(quiz_id:number, score:number, nombre_
   console.log(quiz)
   console.log(quiz_id)
   if (!quiz) throw new Error("Ce quiz n'existe pas.")
-  const {error} = await supabase.from('historique_joueurs').insert({
-    id_joueur:user.id,
-    id_quiz:quiz.id,
-    score:score,
-    nbr_question:nombre_question,
-    nom_quiz:quiz.nomQuiz
+  const { error } = await supabase.from('historique_joueurs').insert({
+    id_joueur: user.id,
+    id_quiz: quiz.id,
+    score: score,
+    nbr_question: nombre_question,
+    nom_quiz: quiz.nomQuiz
   })
 
   revalidatePath('/compte')
@@ -303,7 +303,7 @@ export async function ajouterTentativeQuiz(quiz_id:number, score:number, nombre_
 
 export async function lireCategoriesQuiz() {
   const supabase = await createClient();
-  const { data:categorie, error } = await supabase
+  const { data: categorie, error } = await supabase
     .schema('public')
     .from('Quiz')
     .select('categorie').order('categorie')
@@ -314,13 +314,13 @@ export async function lireCategoriesQuiz() {
 
 }
 
-export async function lireLesQuizDUneCategorie(categorie:string) {
+export async function lireLesQuizDUneCategorie(categorie: string) {
   const supabase = await createClient();
 
-  const { data:quiz, error } = await supabase
+  const { data: quiz, error } = await supabase
     .schema('public')
     .from('Quiz')
-    .select('*').match({categorie:categorie})
+    .select('*').match({ categorie: categorie })
 
 
   return quiz
@@ -341,7 +341,7 @@ export async function modifierPointage(nouveauPointage: number, utilisateurId: a
         points: nouveauPointage,
       }
     )
-    .match({ id_salle: code_salle, id_joueur:utilisateurId })
+    .match({ id_salle: code_salle, id_joueur: utilisateurId })
 
 
 }
@@ -371,6 +371,42 @@ export async function lireTempsRestants(code_salle: string) {
 
 
 
-  return 30
+  return temps
 }
 
+export async function commencerTimer(code_salle: string) {
+
+  const supabase = await createClient();
+  const { data: salle } = await supabase
+    .schema('public')
+    .from('timer')
+    .select()
+    .match({ id_salle: code_salle })
+    .single();
+
+  const fin_timer = new Date(Date.now())
+
+  fin_timer.setSeconds(fin_timer.getSeconds() + 30)
+
+  if (salle) {
+    const { data: temps, error } = await supabase
+      .schema('public')
+      .from('timer')
+      .update(
+        {
+          fin_timer: fin_timer,
+        }
+      )
+      .match({ id_salle: code_salle })
+  }
+
+  const { data: temps, error } = await supabase
+    .schema('public')
+    .from('timer')
+    .insert(
+      {
+        fin_timer: fin_timer,
+        id_salle: code_salle
+      }
+    )
+}

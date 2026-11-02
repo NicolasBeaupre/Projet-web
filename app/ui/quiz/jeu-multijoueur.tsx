@@ -131,7 +131,16 @@ export default function JeuMultijoueur({ quiz, user, salle, joueurs }: { quiz: Q
 
     }
     async function RegarderTempsBd() {
-        return await lireTempsRestants(String(salle?.code))
+        const tempsRestant = await lireTempsRestants(String(salle?.code)) as Date | null
+
+        const temps_maintenant = new Date(Date.now())
+
+        if ((temps_maintenant.getSeconds() -(tempsRestant ?? temps_maintenant ).getSeconds()) <= 0) {
+            handlePointage()
+            handleAffichage
+            return 0
+        }
+        return temps_maintenant.getSeconds() -(tempsRestant ?? temps_maintenant ).getSeconds()
     }
 
     return (
@@ -263,13 +272,17 @@ export default function JeuMultijoueur({ quiz, user, salle, joueurs }: { quiz: Q
                 <div>
                     <div className="flex justify-center items-center my-20 flex-col text-center">
                         <h2 className="text-2xl font-bold my-3">Quiz terminé !</h2>
-                        {quiz.questions[numeroQuestion].bonneReponse == reponse &&
-                            <h2 className="text-2xl font-bold">Votre score final : {pointage + 1}/{numeroQuestion + 1}</h2>
-                        }
-                        {quiz.questions[numeroQuestion].bonneReponse != reponse &&
-                            <h2 className="text-xl font-bold">Votre score final: {pointage}/{numeroQuestion + 1}</h2>
-                        }
-                        {user !== undefined &&
+                         {pointageSalle.map((points, index) => (
+
+                                    <div key={index} className='flex items-center flex-wrap my-5 rounded'>
+                                        {points[1] == user?.id &&
+                                            <p className="text-2xl font-bold">{points[2]} {pointage}/{numeroQuestion + 1} <Crown size={30} /></p>
+                                        }
+                                        {points[1] != user?.id &&
+                                            <p className="text-2xl font-bold">{points[2]} {pointage}/{numeroQuestion + 1}  </p>
+                                        }
+                                    </div>
+                                ))}
                             <div className="border-black border-10 bg-gray-100 w-1/2 h-40 rounded my-5">
                                 <h3 className="text-xl font-bold">Notez le quiz</h3>
                                 <div className="flex justify-center">
@@ -279,7 +292,6 @@ export default function JeuMultijoueur({ quiz, user, salle, joueurs }: { quiz: Q
                                 </div>
 
                             </div>
-                        }
                         <Link href={'/'}>
                             <Button type="button" className="my-5 w-100 h-20 text-lg font-bold">Retour à l'accueil</Button>
                         </Link>
