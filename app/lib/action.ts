@@ -410,3 +410,18 @@ export async function commencerTimer(code_salle: string) {
       }
     )
 }
+
+// Commencement de partie multijoueur
+
+export async function commencerPartie(code_salle: string) {
+  const supabase = await createClient();
+  const {error } = await supabase
+      .schema('public')
+      .from('salle')
+      .update(
+        {
+          en_cours_de_jeu: true
+        }
+      )
+      .match({ id: code_salle })
+}

@@ -21,17 +21,16 @@ import { Button } from "@/components/ui/button"
 import { Code } from 'lucide-react'
 import { VraiSalle, SalleJoueur } from '@/app/lib/definitions'
 import type { User } from '@supabase/supabase-js'
-import { lireSalle, lireSalleJoueur, supprimerJoueurSalle, supprimerSalle } from '@/app/lib/action'
+import { lireSalle, lireSalleJoueur, supprimerJoueurSalle, supprimerSalle, commencerPartie } from '@/app/lib/action'
 import { CopieLien } from './copy-clipboard-btn'
 import { Copiecode } from './copy-clipboard-code'
 import { usePathname, useSearchParams } from 'next/navigation'
+import { channel } from 'diagnostics_channel'
 export default function ComponantSalle({ pSalle, joueursInitiaux, user }: { pSalle: VraiSalle, joueursInitiaux: SalleJoueur[], user: User }) {
     const [salle, setSalle] = useState(pSalle)
     const [joueurs, setJoueurs] = useState(joueursInitiaux)
     const [url, setUrl] = useState('') // url pour le copier coller. Lien de la salle
     const router = useRouter()
-
-
     useEffect(() => {
         setUrl(window.location.href)
     }, [])
@@ -60,6 +59,11 @@ export default function ComponantSalle({ pSalle, joueursInitiaux, user }: { pSal
             'postgres_changes',
             { event: 'DELETE', schema: 'public', table: 'salle_joueur' },
             refetch
+        ).on(
+            'postgres_changes',
+            { event: 'UPDATE', schema: 'public', table: 'salle', filter:'en_cours_de_jeu=eq' + true &&'id_salle=eq.' + pSalle.id  },
+            handleCommencerJeu
+
         ).subscribe((status) => {
             if (status === 'SUBSCRIBED') refetch()
         })
@@ -68,7 +72,15 @@ export default function ComponantSalle({ pSalle, joueursInitiaux, user }: { pSal
         }
     }, [pSalle.id])
 
+    const handleCommencerJeu = () => {
+        commencerJeu()
+    }
 
+    async function commencerJeu() {
+        console.log("Commencer le jeu aaaaaaaaaaaaaaaaaa")
+        router.push(`/jeu/2/${salle.code}`)
+        router.refresh()
+    }
 
     async function QuitterSalle() {
 
@@ -116,7 +128,9 @@ export default function ComponantSalle({ pSalle, joueursInitiaux, user }: { pSal
                 </div>
 
             </div>
-
+            {salle.createur_salle == user.id &&
+                <Button type="button" onClick={handleCommencerJeu} className="my-5 w-100 h-20 text-lg font-bold">Commencer la partie</Button>
+            }
 
             {user.id !== pSalle.createur_salle && <Button className="w-40 h-15 text-lg" onClick={() => { QuitterSalle() }}>Quitter</Button>}
             {user.id == pSalle.createur_salle && <Button className="w-45 h-15 text-lg" variant={"destructive"} onClick={() => { SupprimerSalle() }}>Supprimer la salle</Button>}
