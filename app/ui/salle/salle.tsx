@@ -60,9 +60,8 @@ export default function ComponantSalle({ pSalle, joueursInitiaux, user }: { pSal
             { event: 'DELETE', schema: 'public', table: 'salle_joueur' },
             refetch
         ).on(
-            'postgres_changes',
-            { event: 'UPDATE', schema: 'public', table: 'salle', filter:'en_cours_de_jeu=eq' + true &&'id_salle=eq.' + pSalle.id  },
-            handleCommencerJeu
+            'broadcast',
+            { event: 'commencer_partie' }, () => { commencerJeu() }
 
         ).subscribe((status) => {
             if (status === 'SUBSCRIBED') refetch()
@@ -72,12 +71,19 @@ export default function ComponantSalle({ pSalle, joueursInitiaux, user }: { pSal
         }
     }, [pSalle.id])
 
-    const handleCommencerJeu = () => {
+    const handleBtnCommencer = async () => {
+        await commencerPartie(pSalle.id)
+
+        const supabase = createClient()
+        await supabase.channel('salle:' + pSalle.id).send({
+            type: 'broadcast',
+            event: 'commencer_partie',
+            payload: {}
+        })
         commencerJeu()
     }
 
     async function commencerJeu() {
-        console.log("Commencer le jeu aaaaaaaaaaaaaaaaaa")
         router.push(`/jeu/2/${salle.code}`)
         router.refresh()
     }
@@ -90,7 +96,7 @@ export default function ComponantSalle({ pSalle, joueursInitiaux, user }: { pSal
     }
 
     async function SupprimerSalle() {
-        supprimerSalle( pSalle.id)
+        supprimerSalle(pSalle.id)
         router.push('/')
         router.refresh()
     }
@@ -129,7 +135,7 @@ export default function ComponantSalle({ pSalle, joueursInitiaux, user }: { pSal
 
             </div>
             {salle.createur_salle == user.id &&
-                <Button type="button" onClick={handleCommencerJeu} className="my-5 w-100 h-20 text-lg font-bold">Commencer la partie</Button>
+                <Button type="button" onClick={handleBtnCommencer} className="my-5 w-100 h-20 text-lg font-bold">Commencer la partie</Button>
             }
 
             {user.id !== pSalle.createur_salle && <Button className="w-40 h-15 text-lg" onClick={() => { QuitterSalle() }}>Quitter</Button>}

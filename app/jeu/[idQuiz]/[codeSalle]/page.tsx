@@ -20,7 +20,7 @@ export default async function Page(props: PageProps<'/jeu/[idQuiz]/[codeSalle]'>
     if (salle == null) {
         redirect('/creer-salle')
     }
-    const joueurs =   await lireSalleJoueur(codeSalle)
+    const joueurs =   await lireSalleJoueur(salle.id)
 
     const joueurDansSalle = joueurs?.find((joueur) => joueur.id_joueur === user.id);
 

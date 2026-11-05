@@ -126,22 +126,22 @@ export default function JeuMultijoueur({ quiz, user, salle, joueurs }: { quiz: Q
     }
 
     // Temps BD
-    const handleTempsRestant = () => {
-        return RegarderTempsBd()
+    // const handleTempsRestant = () => {
+    //     return RegarderTempsBd()
 
-    }
-    async function RegarderTempsBd() {
-        const tempsRestant = await lireTempsRestants(String(salle?.code)) as Date | null
+    // }
+    // async function RegarderTempsBd() {
+    //     const tempsRestant = await lireTempsRestants(String(salle?.code)) as Date | null
 
-        const temps_maintenant = new Date(Date.now())
+    //     const temps_maintenant = new Date(Date.now())
 
-        if ((temps_maintenant.getSeconds() -(tempsRestant ?? temps_maintenant ).getSeconds()) <= 0) {
-            handlePointage()
-            handleAffichage
-            return 0
-        }
-        return temps_maintenant.getSeconds() -(tempsRestant ?? temps_maintenant ).getSeconds()
-    }
+    //     if ((temps_maintenant.getSeconds() -(tempsRestant ?? temps_maintenant ).getSeconds()) <= 0) {
+    //         handlePointage()
+    //         handleAffichage
+    //         return 0
+    //     }
+    //     return temps_maintenant.getSeconds() -(tempsRestant ?? temps_maintenant ).getSeconds()
+    // }
 
     return (
         <div>
@@ -151,7 +151,6 @@ export default function JeuMultijoueur({ quiz, user, salle, joueurs }: { quiz: Q
                         <CountdownCircleTimer
                             isPlaying
                             duration={30}
-                            initialRemainingTime={Number(handleTempsRestant())}
                             colors={['#22C55E', '#EAB308', '#EF4444']}
                             colorsTime={[30, 15, 0]}
                             size={120}
