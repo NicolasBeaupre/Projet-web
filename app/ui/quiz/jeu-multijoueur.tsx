@@ -110,6 +110,7 @@ export default function JeuMultijoueur({ quiz, user, salle, joueursInitiaux }: {
 
         if (ontRepondu) {
             await handlePointage()
+            RegarderPointageBd()
             setAfficherQuestion(false)
         }
     }
@@ -119,15 +120,15 @@ export default function JeuMultijoueur({ quiz, user, salle, joueursInitiaux }: {
 
         const channel = supabase.channel('salle:' + salle?.id).on(
             'broadcast',
-            { event: 'afficher_resultat' }, () => { refetch()}).on(
+            { event: 'afficher_resultat' }, () => { refetch() }).on(
 
-            'postgres_changes',
-            { event: 'UPDATE', schema: 'public', table: 'salle', filter: 'id=eq.' + salle?.id },
-            async () => { await refetch() }
+                'postgres_changes',
+                { event: 'UPDATE', schema: 'public', table: 'salle', filter: 'id=eq.' + salle?.id },
+                async () => { await refetch() }
 
-        ).subscribe((status) => {
-            if (status === 'SUBSCRIBED') refetch()
-        })
+            ).subscribe((status) => {
+                if (status === 'SUBSCRIBED') refetch()
+            })
         return () => {
             supabase.removeChannel(channel)
         }
@@ -163,7 +164,7 @@ export default function JeuMultijoueur({ quiz, user, salle, joueursInitiaux }: {
 
     // Pointage multi
     async function modifierPointageBD() {
-        await modifierPointage(pointage + 1, user?.id, salle?.code)
+        await modifierPointage(pointage + 1, user?.id, salle?.id)
     }
 
     const incrementerPointage = () => {
@@ -174,9 +175,12 @@ export default function JeuMultijoueur({ quiz, user, salle, joueursInitiaux }: {
     const handlePointage = () => {
         RegarderPointageBd()
     }
+    useEffect(() => {
+        RegarderPointageBd()
+    }, [salle?.id])
 
     async function RegarderPointageBd() {
-        const pointsBd = await lirePointage(String(salle?.code)) as SalleJoueur[] | null
+        const pointsBd = await lirePointage(String(salle?.id)) as SalleJoueur[] | null
 
         const nouveauPointage: Array<[number, string, string]> = (pointsBd ?? []).map(pointage => [pointage.points, pointage.id_joueur, pointage.nom_joueur])
 
@@ -245,17 +249,23 @@ export default function JeuMultijoueur({ quiz, user, salle, joueursInitiaux }: {
                                         <p><CircleX size={30} /></p>
                                     </div>
                                 }
-                                {pointageSalle.map((points, index) => (
+                                <div className="border-black border-10 rounded my-5">
 
-                                    <div key={index} className='flex items-center flex-wrap my-5 rounded'>
-                                        {points[1] == user?.id &&
-                                            <p className="text-2xl font-bold">{points[2]} {pointage}/{numeroQuestion + 1} <Crown size={30} /></p>
-                                        }
-                                        {points[1] != user?.id &&
-                                            <p className="text-2xl font-bold">{points[2]} {pointage}/{numeroQuestion + 1}  </p>
-                                        }
-                                    </div>
-                                ))}
+                                    <h2 className="text-2xl font-bold underline">Pointage</h2>
+                                    {pointageSalle.map((points, index) => (
+
+                                        <div key={index} className='flex items-center justify-center flex-wrap my-5 rounded'>
+                                            {points[1] == user?.id &&
+                                                <div className="flex justify-center items-center">
+                                                    <p className="text-xl font-bold">{points[2]} {points[0]}/{numeroQuestion + 1}</p><Crown size={30} fill="yellow" />
+                                                </div>
+                                            }
+                                            {points[1] != user?.id &&
+                                                <p className="text-xl font-bold">{points[2]} {points[0]}/{numeroQuestion + 1}  </p>
+                                            }
+                                        </div>
+                                    ))}
+                                </div>
                             </div>
 
                         </div>
@@ -276,7 +286,7 @@ export default function JeuMultijoueur({ quiz, user, salle, joueursInitiaux }: {
                             </CountdownCircleTimer>
                         </div>
                     </div>
-                    <div className="flex items-center my-20 flex-col text-center">
+                    <div className="flex items-center my-10 flex-col text-center">
                         <h2 className="text-2xl font-bold">Question {numeroQuestion + 1}</h2>
                         <p className="text-lg">{quiz.questions[numeroQuestion].titre}</p>
 
@@ -310,18 +320,23 @@ export default function JeuMultijoueur({ quiz, user, salle, joueursInitiaux }: {
             {terminerQuiz == true &&
                 <div>
                     <div className="flex justify-center items-center my-20 flex-col text-center">
-                        <h2 className="text-2xl font-bold my-3">Quiz terminé !</h2>
-                        {pointageSalle.map((points, index) => (
+                        <h2 className="text-4xl font-bold my-3">Quiz terminé !</h2>
+                        <div className="border-10 border-black bg-gray-100">
+                            <h2 className="text-2xl font-bold my-5 underline">Pointage</h2>
+                            {pointageSalle.map((points, index) => (
 
-                            <div key={index} className='flex items-center flex-wrap my-5 rounded'>
-                                {points[1] == user?.id &&
-                                    <p className="text-2xl font-bold">{points[2]} {pointage}/{numeroQuestion + 1} <Crown size={30} /></p>
-                                }
-                                {points[1] != user?.id &&
-                                    <p className="text-2xl font-bold">{points[2]} {pointage}/{numeroQuestion + 1}  </p>
-                                }
-                            </div>
-                        ))}
+                                <div key={index} className='flex items-center flex-wrap my-5 mx-20 rounded'>
+                                    {points[1] == user?.id &&
+                                        <div className="flex justify-center items-center">
+                                            <p className="text-2xl font-bold">{points[2]} {points[0]}/{numeroQuestion + 1}</p><Crown size={30} fill="yellow" />
+                                        </div>
+                                    }
+                                    {points[1] != user?.id &&
+                                        <p className="text-2xl font-bold">{points[2]} {pointage}/{numeroQuestion + 1}  </p>
+                                    }
+                                </div>
+                            ))}
+                        </div>
                         <div className="border-black border-10 bg-gray-100 w-1/2 h-40 rounded my-5">
                             <h3 className="text-xl font-bold">Notez le quiz</h3>
                             <div className="flex justify-center">

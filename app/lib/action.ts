@@ -354,6 +354,7 @@ export async function lirePointage(code_salle: string) {
     .from('salle_joueur')
     .select()
     .match({ id_salle: code_salle })
+    .order('points',{ascending:false})
 
   return points
 }
