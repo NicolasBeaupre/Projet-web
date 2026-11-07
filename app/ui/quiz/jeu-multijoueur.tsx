@@ -2,38 +2,22 @@
 import { CountdownCircleTimer } from "react-countdown-circle-timer";
 import { Quiz } from "@/app/lib/definitions";
 import { Button } from "@/components/ui/button";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { CircleX, Star, CircleCheck, Crown } from "lucide-react";
-import { ajouterNote, modifierPointage, lireTempsRestants, lirePointage } from "@/app/lib/action";
+import { ajouterNote, modifierPointage, lirePointage, lireSalleJoueur, modifierReponse, reinitialiserReponse } from "@/app/lib/action";
 import type { User } from '@supabase/supabase-js'
 import { SalleJoueur, Salle } from "@/app/lib/definitions";
+import { createClient } from '@/lib/supabase/client'
+import { useRouter } from "next/navigation"
 
-interface Joueur {
-    id: string;
-    nom: string;
-    reponse: string;
-    pointage: number;
-    rang: number;
-}
 
-interface Multijoueur {
-    idLobby: string | null;
-    proprietaire: string;
-    joueurs: Joueur[];
-    timer: number;
-    statusPartie: "salle" | "en cours" | "resultat" | "terminee";
-    numeroQuestion: number;
 
-    commencerTimer: () => void;
-    commencerPartie: () => void;
-    terminerJeu: () => void;
-    montrerResultat: () => void;
 
-}
+export default function JeuMultijoueur({ quiz, user, salle, joueursInitiaux }: { quiz: Quiz, user: User | null, salle: Salle | null, joueursInitiaux: SalleJoueur[] | null }) {
 
-export default function JeuMultijoueur({ quiz, user, salle, joueurs }: { quiz: Quiz, user: User | null, salle: Salle | null, joueurs: SalleJoueur[] | null }) {
 
+    const [joueurs, setJoueurs] = useState(joueursInitiaux)
 
     const [noteQuiz, setNoteQuiz] = React.useState(0)
 
@@ -50,6 +34,8 @@ export default function JeuMultijoueur({ quiz, user, salle, joueurs }: { quiz: Q
     const [afficherQuestion, setAfficherQuestion] = useState(true)
 
     const [terminerQuiz, setTerminerQuiz] = useState(false)
+
+    const router = useRouter()
 
     const handleNoteQuiz = async (data: any) => {
         setNoteQuiz(noteQuiz => data)
@@ -77,18 +63,25 @@ export default function JeuMultijoueur({ quiz, user, salle, joueurs }: { quiz: Q
         setNumeroQuestion(numeroQuestion + 1)
     }
 
-    const terminerQuestion = (data: any) => {
+    const terminerQuestion = async (data: any) => {
         handleReponse(data)
         if (reponse === quiz.questions[numeroQuestion].bonneReponse) {
             incrementerPointage()
         }
-        handleAffichage()
+        await modifierReponse(user?.id, salle?.id as string)
+        broadcastReponse()
+        refetch()
+
+    }
+    const reinitialiserRepondu = async () => {
+        await reinitialiserReponse(user?.id, salle?.id as string)
     }
 
     const prochaineQuestion = () => {
         if (quiz.questions.length > numeroQuestion + 1) {
             incrementerNumeroQuestion()
-            handleAffichage()
+            reinitialiserRepondu()
+            setAfficherQuestion(true)
         }
         else {
             handleTerminerQuiz()
@@ -102,6 +95,71 @@ export default function JeuMultijoueur({ quiz, user, salle, joueurs }: { quiz: Q
     const handleTimer = () => {
         terminerQuestion("")
     }
+    //
+    const refetch = async () => {
+        let dataJoueurs = await lireSalleJoueur((salle?.id) as string)
+        setJoueurs(dataJoueurs ?? [])
+        let estToujoursDansSalle = false
+        if (dataJoueurs == null) dataJoueurs = []
+        dataJoueurs.forEach(j => {
+            if (j.id_joueur === user?.id) estToujoursDansSalle = true
+        });
+        if (!estToujoursDansSalle) router.push('/')
+
+        const ontRepondu = dataJoueurs.length > 0 && dataJoueurs.every(j => j.a_repondu === true)
+
+        if (ontRepondu) {
+            await handlePointage()
+            setAfficherQuestion(false)
+        }
+    }
+
+    useEffect(() => {
+        const supabase = createClient()
+
+        const channel = supabase.channel('salle:' + salle?.id).on(
+            'broadcast',
+            { event: 'afficher_resultat' }, () => { refetch()}).on(
+
+            'postgres_changes',
+            { event: 'UPDATE', schema: 'public', table: 'salle', filter: 'id=eq.' + salle?.id },
+            async () => { await refetch() }
+
+        ).subscribe((status) => {
+            if (status === 'SUBSCRIBED') refetch()
+        })
+        return () => {
+            supabase.removeChannel(channel)
+        }
+    }, [salle?.id])
+
+    const broadcastReponse = async () => {
+        await modifierReponse(user?.id, salle?.id as string)
+        const supabase = createClient()
+        await supabase.channel('salle:' + salle?.id).send({
+            type: 'broadcast',
+            event: 'afficher_resultat',
+            payload: {}
+        })
+
+        await refetch()
+    }
+
+    // async function afficherResultat() {
+    //     let estValide = true
+    //     joueurs?.forEach(joueur => {
+    //         if (joueur.a_repondu === false) {
+    //             estValide = false
+    //         }
+    //     });
+    //     if (estValide) {
+    //         await handlePointage()
+    //         await reinitialiserReponse(user?.id, salle?.id as string)
+    //         handleAffichage()
+    //     }
+
+    // }
+    //
 
     // Pointage multi
     async function modifierPointageBD() {
@@ -124,24 +182,6 @@ export default function JeuMultijoueur({ quiz, user, salle, joueurs }: { quiz: Q
 
         setPointageSalle(nouveauPointage);
     }
-
-    // Temps BD
-    // const handleTempsRestant = () => {
-    //     return RegarderTempsBd()
-
-    // }
-    // async function RegarderTempsBd() {
-    //     const tempsRestant = await lireTempsRestants(String(salle?.code)) as Date | null
-
-    //     const temps_maintenant = new Date(Date.now())
-
-    //     if ((temps_maintenant.getSeconds() -(tempsRestant ?? temps_maintenant ).getSeconds()) <= 0) {
-    //         handlePointage()
-    //         handleAffichage
-    //         return 0
-    //     }
-    //     return temps_maintenant.getSeconds() -(tempsRestant ?? temps_maintenant ).getSeconds()
-    // }
 
     return (
         <div>
@@ -271,26 +311,26 @@ export default function JeuMultijoueur({ quiz, user, salle, joueurs }: { quiz: Q
                 <div>
                     <div className="flex justify-center items-center my-20 flex-col text-center">
                         <h2 className="text-2xl font-bold my-3">Quiz terminé !</h2>
-                         {pointageSalle.map((points, index) => (
+                        {pointageSalle.map((points, index) => (
 
-                                    <div key={index} className='flex items-center flex-wrap my-5 rounded'>
-                                        {points[1] == user?.id &&
-                                            <p className="text-2xl font-bold">{points[2]} {pointage}/{numeroQuestion + 1} <Crown size={30} /></p>
-                                        }
-                                        {points[1] != user?.id &&
-                                            <p className="text-2xl font-bold">{points[2]} {pointage}/{numeroQuestion + 1}  </p>
-                                        }
-                                    </div>
-                                ))}
-                            <div className="border-black border-10 bg-gray-100 w-1/2 h-40 rounded my-5">
-                                <h3 className="text-xl font-bold">Notez le quiz</h3>
-                                <div className="flex justify-center">
-                                    {[1, 2, 3, 4, 5].map((note) => (
-                                        <Star key={note} size={30} className={`mx-1 my-5 hover:text-yellow-300 ${note <= noteQuiz ? "fill-yellow-300" : "fill-white"}`} onClick={() => handleNoteQuiz(note)} />
-                                    ))}
-                                </div>
-
+                            <div key={index} className='flex items-center flex-wrap my-5 rounded'>
+                                {points[1] == user?.id &&
+                                    <p className="text-2xl font-bold">{points[2]} {pointage}/{numeroQuestion + 1} <Crown size={30} /></p>
+                                }
+                                {points[1] != user?.id &&
+                                    <p className="text-2xl font-bold">{points[2]} {pointage}/{numeroQuestion + 1}  </p>
+                                }
                             </div>
+                        ))}
+                        <div className="border-black border-10 bg-gray-100 w-1/2 h-40 rounded my-5">
+                            <h3 className="text-xl font-bold">Notez le quiz</h3>
+                            <div className="flex justify-center">
+                                {[1, 2, 3, 4, 5].map((note) => (
+                                    <Star key={note} size={30} className={`mx-1 my-5 hover:text-yellow-300 ${note <= noteQuiz ? "fill-yellow-300" : "fill-white"}`} onClick={() => handleNoteQuiz(note)} />
+                                ))}
+                            </div>
+
+                        </div>
                         <Link href={'/'}>
                             <Button type="button" className="my-5 w-100 h-20 text-lg font-bold">Retour à l'accueil</Button>
                         </Link>

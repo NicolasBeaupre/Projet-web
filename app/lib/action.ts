@@ -358,6 +358,7 @@ export async function lirePointage(code_salle: string) {
   return points
 }
 
+
 // Temps BD
 export async function lireTempsRestants(code_salle: string) {
 
@@ -415,13 +416,42 @@ export async function commencerTimer(code_salle: string) {
 
 export async function commencerPartie(code_salle: string) {
   const supabase = await createClient();
-  const {error } = await supabase
-      .schema('public')
-      .from('salle')
-      .update(
-        {
-          en_cours_de_jeu: true
-        }
-      )
-      .match({ id: code_salle })
+  const { error } = await supabase
+    .schema('public')
+    .from('salle')
+    .update(
+      {
+        en_cours_de_jeu: true
+      }
+    )
+    .match({ id: code_salle })
+}
+export async function modifierReponse(utilisateurId: any, code_salle: string) {
+  const supabase = await createClient();
+
+  const { error } = await supabase
+    .schema('public')
+    .from('salle_joueur')
+    .update(
+      {
+        a_repondu: true
+      }
+    )
+    .match({ id_joueur: utilisateurId, id_salle: code_salle })
+
+}
+
+export async function reinitialiserReponse(utilisateurId: any, code_salle: string) {
+  const supabase = await createClient();
+
+  const { error } = await supabase
+    .schema('public')
+    .from('salle_joueur')
+    .update(
+      {
+        a_repondu: false
+      }
+    )
+    .match({ id_joueur: utilisateurId, id_salle: code_salle })
+
 }

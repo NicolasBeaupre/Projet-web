@@ -38,6 +38,7 @@ export type SalleJoueur = {
   points:number;
   id_joueur:string;
   nom_joueur:string;
+  a_repondu:boolean;
 }
 
 export type Quiz = {
