@@ -332,7 +332,6 @@ export async function lireLesQuizDUneCategorie(categorie: string) {
 
 export async function modifierPointage(nouveauPointage: number, utilisateurId: any, code_salle: any) {
   const supabase = await createClient();
-
   const { error } = await supabase
     .schema('public')
     .from('salle_joueur')

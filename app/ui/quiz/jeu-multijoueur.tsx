@@ -64,8 +64,11 @@ export default function JeuMultijoueur({ quiz, user, salle, joueursInitiaux }: {
     }
 
     const terminerQuestion = async (data: any) => {
+        console.log("test2")
         handleReponse(data)
-        if (reponse === quiz.questions[numeroQuestion].bonneReponse) {
+        console.log("test3")
+        if (`reponse${data}` === quiz.questions[numeroQuestion].bonneReponse) {
+            console.log("test4")
             incrementerPointage()
         }
         await modifierReponse(user?.id, salle?.id as string)
@@ -89,10 +92,12 @@ export default function JeuMultijoueur({ quiz, user, salle, joueursInitiaux }: {
     }
 
     const handleClick = async (data: any) => {
+        console.log("test")
         setQuestionRepondu(current => !current)
         terminerQuestion(data)
     }
     const handleTimer = () => {
+        setQuestionRepondu(current => !current)
         terminerQuestion("")
     }
     //
@@ -109,8 +114,8 @@ export default function JeuMultijoueur({ quiz, user, salle, joueursInitiaux }: {
         const ontRepondu = dataJoueurs.length > 0 && dataJoueurs.every(j => j.a_repondu === true)
 
         if (ontRepondu) {
-            await handlePointage()
-            RegarderPointageBd()
+            handlePointage()
+            await RegarderPointageBd()
             setAfficherQuestion(false)
         }
     }
@@ -332,7 +337,7 @@ export default function JeuMultijoueur({ quiz, user, salle, joueursInitiaux }: {
                                         </div>
                                     }
                                     {points[1] != user?.id &&
-                                        <p className="text-2xl font-bold">{points[2]} {pointage}/{numeroQuestion + 1}  </p>
+                                        <p className="text-2xl font-bold">{points[2]} {points[0]}/{numeroQuestion + 1}  </p>
                                     }
                                 </div>
                             ))}
