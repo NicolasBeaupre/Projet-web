@@ -5,8 +5,17 @@ import { notFound } from "next/navigation";
 import { cn } from "cn";
 import { buttonVariants } from "@/components/ui/button";
 import { lireUtilisateurNomAdmin } from "@/app/lib/actionAdmin";
-import { CircleX, Star, CircleCheck } from "lucide-react";
+import { CircleX, Star, Ellipsis, Trash, SquareExclamationPoint } from "lucide-react";
 import Image from "next/image";
+import { Button } from "@/components/ui/button"
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import { SignalerQuizComponent } from "@/app/ui/admin/signaler-quiz";
 
 export default async function Page(props: PageProps<'/categorie/[nomCategorie]'>) {
     const { nomCategorie } = await props.params
@@ -23,7 +32,8 @@ export default async function Page(props: PageProps<'/categorie/[nomCategorie]'>
         notFound()
     }
     const quiz = await lireLesQuizDUneCategorie(nomCategorie)
-
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
 
 
     return (
@@ -43,7 +53,7 @@ export default async function Page(props: PageProps<'/categorie/[nomCategorie]'>
                         let nbrNote = 0
                         if (i.notes !== null) {
 
-                            i.notes.forEach((n:{note:number}) => {
+                            i.notes.forEach((n: { note: number }) => {
                                 noteTotal += n.note
                             });
                             moyenneNote = Math.ceil(noteTotal / i.notes.length)
@@ -55,7 +65,32 @@ export default async function Page(props: PageProps<'/categorie/[nomCategorie]'>
                         return (
 
                             <li key={i.id} className='flex flex-col justify-between align-middle items-center border-2 p-3 bg-secondary rounded-2xl  gap-5 w-80'>
-                                <h3 className='text-2xl wrap-break-word text-center'>{i.nomQuiz}</h3>
+                                <div className="relative flex w-full items-center justify-center">
+
+                                    <h3 className='text-2xl wrap-break-word text-center'>{i.nomQuiz}</h3>
+                                    <div className="absolute right-0 ">
+
+                                        {/* <DropdownMenu>
+                                            <DropdownMenuTrigger render={<Button variant="outline"><Ellipsis /></Button>} />
+                                            <DropdownMenuContent>
+
+
+                                                <DropdownMenuItem>
+                                                    <SquareExclamationPoint />
+                                                    
+                                                </DropdownMenuItem>
+                                                {user !== null && user?.app_metadata?.est_admin == true &&
+                                             
+                                                    <DropdownMenuItem variant="destructive">
+                                                        <Trash />
+                                                        Supprimer
+                                                    </DropdownMenuItem>
+                                                }
+                                            </DropdownMenuContent>
+                                        </DropdownMenu> */}
+                                        <SignalerQuizComponent id_quiz={i.id} est_admin={user?.app_metadata?.est_admin} />
+                                    </div>
+                                </div>
 
                                 {i.imageUrl !== '' || i.imageUrl !== null &&
 
