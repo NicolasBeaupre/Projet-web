@@ -80,7 +80,21 @@ export async function ajouterNote(idQuiz: Number, nouvelleNote: number, utilisat
 
 }
 
+export async function lireLesQuizs() {
+  const supabase = await createClient()
+  const { data: donneeQuiz, error } = await supabase
+    .schema('public')
+    .from('Quiz')
+    .select('id, nomQuiz')
+  if (error) {
+     throw new Error('Quiz inexistant', error)
+  }
 
+  return donneeQuiz.map((quiz) => ({
+    label: quiz.nomQuiz,
+    value: String(quiz.id)
+  }))
+}
 
 export async function lireUnQuiz(data: number) {
   const supabase = await createClient()
@@ -92,8 +106,7 @@ export async function lireUnQuiz(data: number) {
     .single()
 
   if (error) {
-    // throw new Error('Quiz inexistant')
-    console.log(donneeQuiz)
+    throw new Error('Quiz inexistant', error)
   }
 
   return donneeQuiz

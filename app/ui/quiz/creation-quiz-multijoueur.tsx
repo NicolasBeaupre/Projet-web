@@ -15,11 +15,13 @@ import {
 import { Button } from "@/components/ui/button"
 import CreerSalle from '@/app/creer-salle/action'
 import { Icon, Info } from 'lucide-react';
+import { lireLesQuizs } from '@/app/lib/action'
 
 type Salle = {
     idCreateur?: string,
     nomLobby: string,
-    nbrJoueurMax: string
+    nbrJoueurMax: string,
+    idQuiz: string,
 }
 export default function ComponentsCreationQuizMultijoueur() {
 
@@ -27,6 +29,9 @@ export default function ComponentsCreationQuizMultijoueur() {
 
     // const [nbrJoueur, setNbrJoueur] = useState('')
     const [nbrJoueur, setNbrJoueur] = useState<string | null>(null);
+    const [quizChoisie, setQuizChoisie] = useState<string | null>(null);
+    const [quizChoisieSelect, setQuizChoisieSelect] = useState<{ label: string; value: string }[]>([]);
+    const [erreurQuizChoisie, setErreurQuizChoisie] = useState(false)
     const [message, setMessage] = useState('')
     const [loading, setLoading] = useState(false)
     const [erreurNbrJoueur, setErreurNbrJoueur] = useState(false)
@@ -41,9 +46,21 @@ export default function ComponentsCreationQuizMultijoueur() {
         { label: "5", value: '5' },
     ]
     useEffect(() => {
+        ajouterQuizSelect();
+    }, [])
+
+    async function ajouterQuizSelect() {
+        const quizs = await lireLesQuizs()
+        setQuizChoisieSelect(quizs);
+    }
+    useEffect(() => {
         setMessage('')
         setErreurNbrJoueur(false)
     }, [nbrJoueur])
+    useEffect(() => {
+        setMessage('')
+        setErreurQuizChoisie(false)
+    }, [quizChoisie])
     useEffect(() => {
         setMessageErreurNomLobby('')
         setErreurNomLobby(false)
@@ -57,10 +74,17 @@ export default function ComponentsCreationQuizMultijoueur() {
         setMessage('')
         setErreurNbrJoueur(false)
         setErreurNomLobby(false)
+        setErreurQuizChoisie(false)
         setLoading(false)
         if (!nbrJoueur) {
             setMessage("Veuillez entrer un nombre de joueur.")
             setErreurNbrJoueur(true)
+
+            return
+        }
+        if (!quizChoisie) {
+            setMessage("Veuillez choisir un quiz.")
+            setErreurQuizChoisie(true)
 
             return
         }
@@ -76,7 +100,8 @@ export default function ComponentsCreationQuizMultijoueur() {
             // idCreateur: user?.id,
             idCreateur: user?.id,
             nomLobby: nomLobby,
-            nbrJoueurMax: nbrJoueur
+            nbrJoueurMax: nbrJoueur,
+            idQuiz: quizChoisie,
         }
 
         const result = await CreerSalle(data)
@@ -120,6 +145,25 @@ export default function ComponentsCreationQuizMultijoueur() {
                                 <SelectContent >
                                     <SelectGroup>
                                         {nbrJoueurSelect.map((item) => (
+                                            <SelectItem key={item.value} value={item.value}>
+                                                {item.label}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectGroup>
+                                </SelectContent>
+                            </Select>
+                            {message && <p className="text-sm text-red-600">{message}</p>}
+                        </Field>
+                        <Field >
+                            <FieldLabel className='text-lg font-bold' htmlFor='quiz-choisie-lobby-select'>Quiz</FieldLabel>
+
+                            <Select value={quizChoisie} onValueChange={setQuizChoisie ?? ''} >
+                                <SelectTrigger id="quiz-choisie-lobby-select" aria-invalid={erreurQuizChoisie} >
+                                    <SelectValue placeholder="Nom du quiz" />
+                                </SelectTrigger>
+                                <SelectContent >
+                                    <SelectGroup>
+                                        {quizChoisieSelect.map((item) => (
                                             <SelectItem key={item.value} value={item.value}>
                                                 {item.label}
                                             </SelectItem>
