@@ -23,8 +23,7 @@ export default async function Page(props: PageProps<'/salle/[codeSalle]'>) {
         message = "Cette salle n'existe pas ou ou n'existe plus."
     }
     else {
-        joueurs = await lireSalleJoueur(salle[0].id)
-
+        joueurs = await lireSalleJoueur(salle.id)
         if (joueurs !== null) {
             for (let i = 0; i < joueurs?.length; i++) {
                 if (joueurs[i].id_joueur == user.id) {
@@ -34,11 +33,11 @@ export default async function Page(props: PageProps<'/salle/[codeSalle]'>) {
 
             }
         }
-        if (joueurs !== null && salle !== null && salle[0].en_cours_de_Jeu) {
+        if (joueurs !== null && salle !== null && salle.en_cours_de_Jeu) {
             erreur = true
             message = "Cette salle est déjà en train de répondre à un quiz."
         }
-        else if (joueurs !== null && salle !== null && joueurs?.length >= salle[0].nbr_joueur_max && !estJoueurDejaDansSalle) {
+        else if (joueurs !== null && salle !== null && joueurs?.length >= salle.nbr_joueur_max && !estJoueurDejaDansSalle) {
             erreur = true
             message = "Cette salle est déjà pleine."
         }
@@ -47,11 +46,11 @@ export default async function Page(props: PageProps<'/salle/[codeSalle]'>) {
 
             if (!estJoueurDejaDansSalle) {
                 await ajouterJoueurSalle({
-                    id_salle: salle[0].id,
+                    id_salle: salle.id,
                     id_joueur: user.id,
                     nom_joueur: user.user_metadata?.username,
                 })
-                joueurs = await lireSalleJoueur(salle[0].id) 
+                joueurs = await lireSalleJoueur(salle.id)
             }
 
             // ajouterJoueurSalle({ id_salle: salle[0].id, id_joueur: user?.id, nom_joueur: user?.user_metadata?.username })
@@ -68,7 +67,7 @@ export default async function Page(props: PageProps<'/salle/[codeSalle]'>) {
             {!erreur && salle &&
 
 
-                <ComponantSalle pSalle={salle[0]} joueursInitiaux={joueurs ?? []}
+                <ComponantSalle pSalle={salle} joueursInitiaux={joueurs ?? []}
                     user={user ?? null} />
             }
             {erreur &&
@@ -87,4 +86,3 @@ export default async function Page(props: PageProps<'/salle/[codeSalle]'>) {
         </div >
     )
 }
-

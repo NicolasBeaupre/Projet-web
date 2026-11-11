@@ -28,6 +28,7 @@ export type VraiSalle = {
   nom_salle: string;
   created_at?:string;
   en_cours_de_jeu?:boolean;
+  id_quiz?:number;
 }
 
 
@@ -38,6 +39,7 @@ export type SalleJoueur = {
   points:number;
   id_joueur:string;
   nom_joueur:string;
+  a_repondu:boolean;
 }
 
 export type Quiz = {
@@ -50,13 +52,4 @@ export type Quiz = {
   ];
   notes:[{note:number, utilisateur:string}];
   createur:string;
-}
-
-export type Questions = {
-  id:string;
-  titre:string;
-  reponse1:string;
-  reponse2:string;
-  reponse3:string;
-  reponse4:string;
 }
