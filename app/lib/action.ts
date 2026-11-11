@@ -141,6 +141,7 @@ export async function ajouterSalle(data: any) {
         createur_salle: data.createur_salle,
         nbr_joueur_max: data.nbr_joueur_max,
         nom_salle: data.nom_salle,
+        id_quiz: data.id_quiz
       }
     ])
   revalidatePath('/', 'layout')

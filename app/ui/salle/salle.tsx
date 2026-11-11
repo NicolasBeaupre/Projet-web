@@ -84,7 +84,7 @@ export default function ComponantSalle({ pSalle, joueursInitiaux, user }: { pSal
     }
 
     async function commencerJeu() {
-        router.push(`/jeu/2/${salle.code}`)
+        router.push(`/jeu/${salle.id_quiz}/${salle.code}`)
         router.refresh()
     }
 
