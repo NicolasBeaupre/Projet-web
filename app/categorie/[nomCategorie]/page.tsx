@@ -1,20 +1,12 @@
-import Jeu from "@/app/ui/quiz/jeu"
 import { lireLesQuizDUneCategorie, lireCategoriesQuiz } from "@/app/lib/action";
 import { createClient } from '@/lib/supabase/server'
 import { notFound } from "next/navigation";
 import { cn } from "cn";
 import { buttonVariants } from "@/components/ui/button";
 import { lireUtilisateurNomAdmin } from "@/app/lib/actionAdmin";
-import { CircleX, Star, Ellipsis, Trash, SquareExclamationPoint } from "lucide-react";
+import { Star } from "lucide-react";
 import Image from "next/image";
-import { Button } from "@/components/ui/button"
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuSeparator,
-    DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+
 import { SignalerQuizComponent } from "@/app/ui/admin/signaler-quiz";
 
 export default async function Page(props: PageProps<'/categorie/[nomCategorie]'>) {
@@ -69,25 +61,6 @@ export default async function Page(props: PageProps<'/categorie/[nomCategorie]'>
 
                                     <h3 className='text-2xl wrap-break-word text-center'>{i.nomQuiz}</h3>
                                     <div className="absolute right-0 ">
-
-                                        {/* <DropdownMenu>
-                                            <DropdownMenuTrigger render={<Button variant="outline"><Ellipsis /></Button>} />
-                                            <DropdownMenuContent>
-
-
-                                                <DropdownMenuItem>
-                                                    <SquareExclamationPoint />
-                                                    
-                                                </DropdownMenuItem>
-                                                {user !== null && user?.app_metadata?.est_admin == true &&
-                                             
-                                                    <DropdownMenuItem variant="destructive">
-                                                        <Trash />
-                                                        Supprimer
-                                                    </DropdownMenuItem>
-                                                }
-                                            </DropdownMenuContent>
-                                        </DropdownMenu> */}
                                         <SignalerQuizComponent id_quiz={i.id} est_admin={user?.app_metadata?.est_admin} />
                                     </div>
                                 </div>

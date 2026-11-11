@@ -8,7 +8,7 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table"
-import { lireSignalement } from "../lib/action"
+import { lireSignalement, lireUnQuiz } from "../lib/action"
 export default async function SignalementPage() {
     const signalements = await lireSignalement()
     return (
@@ -19,7 +19,7 @@ export default async function SignalementPage() {
                     <TableCaption>{signalements.length == 0 && "Il n'y a aucun signalement"}</TableCaption>
                     <TableHeader>
                         <TableRow>
-                            <TableHead className="w-[100px]">signalement</TableHead>
+                            <TableHead >signalement</TableHead>
                             <TableHead>id du quiz</TableHead>
                             <TableHead>id de l'utilisateur (si connecté)</TableHead>
                             <TableHead>Description</TableHead>
@@ -28,18 +28,19 @@ export default async function SignalementPage() {
                     </TableHeader>
                     <TableBody>
                         {signalements.map((signalement) => (
+
                             <TableRow key={signalement.id}>
                                 <TableCell className="font-medium">{signalement.id}</TableCell>
                                 <TableCell >{signalement.id_quiz}</TableCell>
                                 <TableCell >{signalement.user}</TableCell>
                                 <TableCell>{signalement.description}</TableCell>
-                                <TableCell>{new Date(signalement.created_at).toLocaleDateString('fr-FR', {
+                                <TableCell><time>{new Date(signalement.created_at).toLocaleDateString('fr-FR', {
                                     day: "numeric",
                                     month: "long",
                                     year: "numeric",
                                     hour: "2-digit",
                                     minute: "2-digit",
-                                })}</TableCell>
+                                })}</time></TableCell>
                             </TableRow>
                         ))}
                     </TableBody>
@@ -48,4 +49,10 @@ export default async function SignalementPage() {
             </div>
         </div>
     )
+
+}
+
+
+async function lireIdQuiz(id:number){
+    return await lireUnQuiz(id)
 }
