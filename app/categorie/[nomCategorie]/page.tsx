@@ -2,10 +2,11 @@ import { lireLesQuizDUneCategorie, lireCategoriesQuiz } from "@/app/lib/action";
 import { createClient } from '@/lib/supabase/server'
 import { notFound } from "next/navigation";
 import { cn } from "cn";
-import { buttonVariants } from "@/components/ui/button";
+import { buttonVariants, Button } from "@/components/ui/button";
 import { lireUtilisateurNomAdmin } from "@/app/lib/actionAdmin";
 import { Star } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link"
 
 import { SignalerQuizComponent } from "@/app/ui/admin/signaler-quiz";
 
@@ -114,7 +115,10 @@ export default async function Page(props: PageProps<'/categorie/[nomCategorie]'>
 async function Createur({ id }: { id: string | null }) {
     if (!id) return <p>Inconnu</p>
     const nom = await lireUtilisateurNomAdmin(id)
-    return <p className="font-bold">{nom ?? 'Inconnu'}</p>
+    if (nom == null)
+        return <p className="font-bold">Inconnu</p>
+    else 
+        return <Button variant={'link'} className='font-bold' render={<Link href={`/compte/detail/${id}`}/>}>{nom}</Button>
 }
 
 function Etoile({ nbrEtoilePleine, nbrEtoileVide }: { nbrEtoilePleine: number, nbrEtoileVide: number }) {
