@@ -30,11 +30,11 @@ export default function RechercherSalle() {
         const salle = await lireSalle(codeSalle.trim().toUpperCase())
         if (salle == null || salle?.length == 0) {
 
-            
+
             messageErreur = "Cette salle n'existe pas ou ou n'existe plus."
         }
         else {
-            joueurs = await lireSalleJoueur(salle[0].id)
+            joueurs = await lireSalleJoueur(salle.id)
 
             if (joueurs !== null) {
                 for (let i = 0; i < joueurs?.length; i++) {
@@ -45,12 +45,12 @@ export default function RechercherSalle() {
 
                 }
             }
-            if (joueurs !== null && salle !== null && salle[0].en_cours_de_Jeu) {
-               
+            if (joueurs !== null && salle !== null && salle.en_cours_de_Jeu) {
+
                 messageErreur = "Cette salle est déjà en train de répondre à un quiz."
             }
-            else if (joueurs !== null && salle !== null && joueurs?.length >= salle[0].nbr_joueur_max && !estJoueurDejaDansSalle) {
-              
+            else if (joueurs !== null && salle !== null && joueurs?.length >= salle.nbr_joueur_max && !estJoueurDejaDansSalle) {
+
                 messageErreur = "Cette salle est déjà pleine."
             }
 
@@ -106,7 +106,7 @@ export default function RechercherSalle() {
             </form>
 
 
-       
+
 
 
         </div >

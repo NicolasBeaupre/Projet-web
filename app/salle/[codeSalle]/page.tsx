@@ -1,5 +1,5 @@
 
-import { lireSalle } from "@/app/lib/action";
+import { lireSalle, supprimerSalle } from "@/app/lib/action";
 import ComponantSalle from "@/app/ui/salle/salle";
 import { lireSalleJoueur, ajouterJoueurSalle } from '@/app/lib/action';
 import { createClient } from '@/lib/supabase/server'
@@ -17,6 +17,7 @@ export default async function Page(props: PageProps<'/salle/[codeSalle]'>) {
     if (user == null) redirect('/compte/connexion')
 
     const salle = await lireSalle(codeSalle)
+
     if (salle == null || salle?.length == 0) {
 
         erreur = true
@@ -33,7 +34,11 @@ export default async function Page(props: PageProps<'/salle/[codeSalle]'>) {
 
             }
         }
-        if (joueurs !== null && salle !== null && salle.en_cours_de_Jeu) {
+        if (salle.en_cours_de_jeu) {
+            if (user.id === salle.createur_salle) {
+                supprimerSalle(salle.id)
+                redirect('/creer-salle')
+            }
             erreur = true
             message = "Cette salle est déjà en train de répondre à un quiz."
         }

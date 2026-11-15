@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { CircleX, Star, CircleCheck, Crown } from "lucide-react";
-import { ajouterNote, modifierPointage, lirePointage, lireSalleJoueur, modifierReponse, reinitialiserReponse } from "@/app/lib/action";
+import { ajouterNote, modifierPointage, lirePointage, lireSalleJoueur, modifierReponse, reinitialiserReponse, supprimerJoueurSalle, supprimerSalle, modifierNumeroQuestion } from "@/app/lib/action";
 import type { User } from '@supabase/supabase-js'
 import { SalleJoueur, Salle } from "@/app/lib/definitions";
 import { createClient } from '@/lib/supabase/client'
@@ -21,7 +21,7 @@ export default function JeuMultijoueur({ quiz, user, salle, joueursInitiaux }: {
 
     const [noteQuiz, setNoteQuiz] = React.useState(0)
 
-    const [numeroQuestion, setNumeroQuestion] = React.useState(0)
+    const [numeroQuestion, setNumeroQuestion] = useState(salle?.numero_question ?? 0)
 
     const [pointage, setPointage] = React.useState(0)
 
@@ -61,6 +61,7 @@ export default function JeuMultijoueur({ quiz, user, salle, joueursInitiaux }: {
 
     const incrementerNumeroQuestion = () => {
         setNumeroQuestion(numeroQuestion + 1)
+        broadcastNumeroQuestion()
     }
 
     const terminerQuestion = async (data: any) => {
@@ -82,7 +83,9 @@ export default function JeuMultijoueur({ quiz, user, salle, joueursInitiaux }: {
 
     const prochaineQuestion = () => {
         if (quiz.questions.length > numeroQuestion + 1) {
-            incrementerNumeroQuestion()
+            if (user?.id == salle?.createur_salle) {
+                incrementerNumeroQuestion()
+            }
             reinitialiserRepondu()
             setQuestionRepondu(false)
             setAfficherQuestion(true)
@@ -102,6 +105,9 @@ export default function JeuMultijoueur({ quiz, user, salle, joueursInitiaux }: {
         terminerQuestion("")
     }
     //
+    const incrementerNumeroQuestionMulti = (data: any) => {
+        setNumeroQuestion(data)
+    }
     const refetch = async () => {
         let dataJoueurs = await lireSalleJoueur((salle?.id) as string)
         setJoueurs(dataJoueurs ?? [])
@@ -124,20 +130,51 @@ export default function JeuMultijoueur({ quiz, user, salle, joueursInitiaux }: {
     useEffect(() => {
         const supabase = createClient()
 
-        const channel = supabase.channel('salle:' + salle?.id).on(
+        const channel = supabase.channel('salle:' + salle?.id, {
+            config: {
+                presence:{
+                    key: user?.id,
+                }
+            }
+        })
+        channel.on(
             'broadcast',
-            { event: 'afficher_resultat' }, () => { refetch() }).on(
+            { event: 'afficher_resultat' }, () => { refetch() })
+            .on(
 
                 'postgres_changes',
                 { event: 'UPDATE', schema: 'public', table: 'salle', filter: 'id=eq.' + salle?.id },
-                async () => { await refetch() }
+                async () => { await refetch() })
+            .on(
 
-            ).subscribe((status) => {
-                if (status === 'SUBSCRIBED') refetch()
+                'broadcast',
+                { event: 'afficher_numero_question' }, (payload) => { incrementerNumeroQuestionMulti(payload.payload.nouveauNumeroQuestion) })
+            .on(
+
+                'postgres_changes',
+                { event: 'DELETE', schema: 'public', table: 'salle', filter: 'id=eq.' + salle?.id },
+                () => { router.push('/') })
+            .on('presence', {event: 'leave'}, async ({key}) => {
+                if (key === salle?.createur_salle) {
+                    router.push('/')
+                }
+                else if (user?.id === salle?.createur_salle){
+                    await supprimerJoueurSalle(key, salle?.id as string)
+                }
+            })
+            .subscribe(async (status) => {
+                if (status === 'SUBSCRIBED') {
+                    await channel.track({
+                        online_at: new Date().toISOString(),
+                        username: user?.user_metadata?.username
+                    })
+                }
+                    refetch()
             })
         return () => {
             supabase.removeChannel(channel)
         }
+
     }, [salle?.id])
 
     const broadcastReponse = async () => {
@@ -150,6 +187,16 @@ export default function JeuMultijoueur({ quiz, user, salle, joueursInitiaux }: {
         })
 
         await refetch()
+    }
+    const broadcastNumeroQuestion = async () => {
+        const nouveauNumeroQuestion = numeroQuestion + 1
+        await modifierNumeroQuestion(salle?.id as string, nouveauNumeroQuestion)
+        const supabase = createClient()
+        await supabase.channel('salle:' + salle?.id).send({
+            type: 'broadcast',
+            event: 'afficher_numero_question',
+            payload: { nouveauNumeroQuestion }
+        })
     }
 
     // async function afficherResultat() {

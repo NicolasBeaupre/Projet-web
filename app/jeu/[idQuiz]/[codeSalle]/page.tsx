@@ -17,8 +17,12 @@ export default async function Page(props: PageProps<'/jeu/[idQuiz]/[codeSalle]'>
 
     const quiz =   await lireUnQuiz(Number(idQuiz))
     const salle =   await lireSalle(codeSalle)
+
     if (salle == null) {
         redirect('/creer-salle')
+    }
+    if (!salle.en_cours_de_jeu) {
+        redirect(`/salle/${salle.code}`)
     }
     const joueurs =   await lireSalleJoueur(salle.id)
 

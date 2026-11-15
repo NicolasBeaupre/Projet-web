@@ -373,6 +373,8 @@ export async function lirePointage(code_salle: string) {
 }
 
 
+
+
 // Temps BD
 export async function lireTempsRestants(code_salle: string) {
 
@@ -454,6 +456,22 @@ export async function modifierReponse(utilisateurId: any, code_salle: string) {
     .match({ id_joueur: utilisateurId, id_salle: code_salle })
 
 }
+
+export async function modifierNumeroQuestion(code_salle: string, numero_question: number) {
+  const supabase = await createClient();
+
+  const { error } = await supabase
+    .schema('public')
+    .from('salle')
+    .update(
+      {
+        numero_question: numero_question
+      }
+    )
+    .match({ id_salle: code_salle })
+
+}
+
 
 export async function reinitialiserReponse(utilisateurId: any, code_salle: string) {
   const supabase = await createClient();

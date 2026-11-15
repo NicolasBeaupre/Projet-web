@@ -18,6 +18,7 @@ export type Salle = {
   created_at?:string;
   en_cours_de_jeu?:boolean;
   id_quiz?:number;
+  numero_question?:number;
 }
 
 export type VraiSalle = {

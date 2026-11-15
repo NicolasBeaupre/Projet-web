@@ -157,7 +157,7 @@ export default function ComponentsCreationQuizMultijoueur() {
                         <Field >
                             <FieldLabel className='text-lg font-bold' htmlFor='quiz-choisie-lobby-select'>Quiz</FieldLabel>
 
-                            <Select value={quizChoisie} onValueChange={setQuizChoisie ?? ''} >
+                            <Select value={quizChoisieSelect.find((item) => item.value === quizChoisie)?.label ?? ""} onValueChange={setQuizChoisie ?? ''} >
                                 <SelectTrigger id="quiz-choisie-lobby-select" aria-invalid={erreurQuizChoisie} >
                                     <SelectValue placeholder="Nom du quiz" />
                                 </SelectTrigger>
