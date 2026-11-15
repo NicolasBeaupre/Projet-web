@@ -93,9 +93,9 @@ export default function Jeu({ quiz, user }: { quiz: Quiz, user: User | null }) {
                     <div className="fixed flex justify-center my-5 top-15 right-5 sm:right-15">
                         <CountdownCircleTimer
                             isPlaying
-                            duration={30}
+                            duration={20}
                             colors={['#22C55E', '#EAB308', '#EF4444']}
-                            colorsTime={[30, 15, 0]}
+                            colorsTime={[20, 10, 0]}
                             size={120}
                             onComplete={handleTimer}
                         >
@@ -157,9 +157,9 @@ export default function Jeu({ quiz, user }: { quiz: Quiz, user: User | null }) {
                         <div className="fixed flex justify-center my-5 top-15 right-5 sm:right-15">
                             <CountdownCircleTimer
                                 isPlaying
-                                duration={10}
+                                duration={5}
                                 colors={['#22C55E', '#EAB308', '#EF4444']}
-                                colorsTime={[10, 5, 0]}
+                                colorsTime={[5, 3, 0]}
                                 size={120}
                                 onComplete={prochaineQuestion}
                             >

@@ -10,7 +10,8 @@ type SalleTemp = {
     idCreateur?: string,
     nomLobby: string,
     nbrJoueurMax: string,
-    code?: string
+    code?: string,
+    idQuiz: string,
 }
 export default async function CreerSalle(pSalle: SalleTemp) {
     try {
@@ -51,7 +52,9 @@ export default async function CreerSalle(pSalle: SalleTemp) {
 
         const nbrJoueurMax = Number(pSalle.nbrJoueurMax)
 
-        const salle: Salle = { code: code, createur_salle: pSalle.idCreateur, nbr_joueur_max: nbrJoueurMax, nom_salle: pSalle.nomLobby }
+        const idQuiz = Number(pSalle.idQuiz)
+
+        const salle: Salle = { code: code, createur_salle: pSalle.idCreateur, nbr_joueur_max: nbrJoueurMax, nom_salle: pSalle.nomLobby, id_quiz: idQuiz }
 
         await ajouterSalle(salle)
         const salleExiste = await lireCodeExiste(code)

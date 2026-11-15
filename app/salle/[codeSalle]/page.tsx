@@ -1,5 +1,5 @@
 
-import { lireSalle } from "@/app/lib/action";
+import { lireSalle, supprimerSalle } from "@/app/lib/action";
 import ComponantSalle from "@/app/ui/salle/salle";
 import { lireSalleJoueur, ajouterJoueurSalle } from '@/app/lib/action';
 import { createClient } from '@/lib/supabase/server'
@@ -17,14 +17,14 @@ export default async function Page(props: PageProps<'/salle/[codeSalle]'>) {
     if (user == null) redirect('/compte/connexion')
 
     const salle = await lireSalle(codeSalle)
+
     if (salle == null || salle?.length == 0) {
 
         erreur = true
         message = "Cette salle n'existe pas ou ou n'existe plus."
     }
     else {
-        joueurs = await lireSalleJoueur(salle[0].id)
-
+        joueurs = await lireSalleJoueur(salle.id)
         if (joueurs !== null) {
             for (let i = 0; i < joueurs?.length; i++) {
                 if (joueurs[i].id_joueur == user.id) {
@@ -34,11 +34,15 @@ export default async function Page(props: PageProps<'/salle/[codeSalle]'>) {
 
             }
         }
-        if (joueurs !== null && salle !== null && salle[0].en_cours_de_Jeu) {
+        if (salle.en_cours_de_jeu) {
+            if (user.id === salle.createur_salle) {
+                supprimerSalle(salle.id)
+                redirect('/creer-salle')
+            }
             erreur = true
             message = "Cette salle est déjà en train de répondre à un quiz."
         }
-        else if (joueurs !== null && salle !== null && joueurs?.length >= salle[0].nbr_joueur_max && !estJoueurDejaDansSalle) {
+        else if (joueurs !== null && salle !== null && joueurs?.length >= salle.nbr_joueur_max && !estJoueurDejaDansSalle) {
             erreur = true
             message = "Cette salle est déjà pleine."
         }
@@ -47,11 +51,11 @@ export default async function Page(props: PageProps<'/salle/[codeSalle]'>) {
 
             if (!estJoueurDejaDansSalle) {
                 await ajouterJoueurSalle({
-                    id_salle: salle[0].id,
+                    id_salle: salle.id,
                     id_joueur: user.id,
                     nom_joueur: user.user_metadata?.username,
                 })
-                joueurs = await lireSalleJoueur(salle[0].id) 
+                joueurs = await lireSalleJoueur(salle.id)
             }
 
             // ajouterJoueurSalle({ id_salle: salle[0].id, id_joueur: user?.id, nom_joueur: user?.user_metadata?.username })
@@ -68,7 +72,7 @@ export default async function Page(props: PageProps<'/salle/[codeSalle]'>) {
             {!erreur && salle &&
 
 
-                <ComponantSalle pSalle={salle[0]} joueursInitiaux={joueurs ?? []}
+                <ComponantSalle pSalle={salle} joueursInitiaux={joueurs ?? []}
                     user={user ?? null} />
             }
             {erreur &&
@@ -87,4 +91,3 @@ export default async function Page(props: PageProps<'/salle/[codeSalle]'>) {
         </div >
     )
 }
-

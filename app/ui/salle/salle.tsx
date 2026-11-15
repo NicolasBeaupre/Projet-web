@@ -21,17 +21,16 @@ import { Button } from "@/components/ui/button"
 import { Code } from 'lucide-react'
 import { VraiSalle, SalleJoueur } from '@/app/lib/definitions'
 import type { User } from '@supabase/supabase-js'
-import { lireSalle, lireSalleJoueur, supprimerJoueurSalle, supprimerSalle } from '@/app/lib/action'
+import { lireSalle, lireSalleJoueur, supprimerJoueurSalle, supprimerSalle, commencerPartie } from '@/app/lib/action'
 import { CopieLien } from './copy-clipboard-btn'
 import { Copiecode } from './copy-clipboard-code'
 import { usePathname, useSearchParams } from 'next/navigation'
+import { channel } from 'diagnostics_channel'
 export default function ComponantSalle({ pSalle, joueursInitiaux, user }: { pSalle: VraiSalle, joueursInitiaux: SalleJoueur[], user: User }) {
     const [salle, setSalle] = useState(pSalle)
     const [joueurs, setJoueurs] = useState(joueursInitiaux)
     const [url, setUrl] = useState('') // url pour le copier coller. Lien de la salle
     const router = useRouter()
-
-
     useEffect(() => {
         setUrl(window.location.href)
     }, [])
@@ -60,6 +59,10 @@ export default function ComponantSalle({ pSalle, joueursInitiaux, user }: { pSal
             'postgres_changes',
             { event: 'DELETE', schema: 'public', table: 'salle_joueur' },
             refetch
+        ).on(
+            'broadcast',
+            { event: 'commencer_partie' }, () => { commencerJeu() }
+
         ).subscribe((status) => {
             if (status === 'SUBSCRIBED') refetch()
         })
@@ -68,7 +71,22 @@ export default function ComponantSalle({ pSalle, joueursInitiaux, user }: { pSal
         }
     }, [pSalle.id])
 
+    const handleBtnCommencer = async () => {
+        await commencerPartie(pSalle.id)
 
+        const supabase = createClient()
+        await supabase.channel('salle:' + pSalle.id).send({
+            type: 'broadcast',
+            event: 'commencer_partie',
+            payload: {}
+        })
+        commencerJeu()
+    }
+
+    async function commencerJeu() {
+        router.push(`/jeu/${salle.id_quiz}/${salle.code}`)
+        router.refresh()
+    }
 
     async function QuitterSalle() {
 
@@ -78,7 +96,7 @@ export default function ComponantSalle({ pSalle, joueursInitiaux, user }: { pSal
     }
 
     async function SupprimerSalle() {
-        supprimerSalle( pSalle.id)
+        supprimerSalle(pSalle.id)
         router.push('/')
         router.refresh()
     }
@@ -116,7 +134,9 @@ export default function ComponantSalle({ pSalle, joueursInitiaux, user }: { pSal
                 </div>
 
             </div>
-
+            {salle.createur_salle == user.id &&
+                <Button type="button" onClick={handleBtnCommencer} className="my-5 w-100 h-20 text-lg font-bold">Commencer la partie</Button>
+            }
 
             {user.id !== pSalle.createur_salle && <Button className="w-40 h-15 text-lg" onClick={() => { QuitterSalle() }}>Quitter</Button>}
             {user.id == pSalle.createur_salle && <Button className="w-45 h-15 text-lg" variant={"destructive"} onClick={() => { SupprimerSalle() }}>Supprimer la salle</Button>}
