@@ -8,17 +8,30 @@ import { cn } from "@/lib/utils"
 
 import { ChevronRight } from 'lucide-react';
 import { ChevronLeft } from 'lucide-react';
+import {
+    Dialog,
+    DialogClose,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+} from "@/components/ui/dialog"
+import { supprimerCompteEnTantAdmin } from '../../suppression-compte-serveur'
+import { SupprimerUserAdminComponant } from '@/app/ui/admin/supprimer-user-admin'
+import { DevenirAdminComponant } from '@/app/ui/admin/devenir-admin'
 
-export default async function Page(props: PageProps<'/compte/detail/[idUser]'>){ 
-    const {idUser} = await props.params
+
+export default async function Page(props: PageProps<'/compte/detail/[idUser]'>) {
+    const { idUser } = await props.params
 
 
     const supabase = await createClient();
-    // const { data: { user } } = await supabase.auth.getUser()
-    const user = await lireUtilisateurAdmin(idUser)
-    if (user == null) notFound()
+    const utilisateur = await lireUtilisateurAdmin(idUser)
+    if (utilisateur == null) notFound()
 
-    const dateCreation = new Date(user?.dateCreation).toLocaleDateString('fr-FR', {
+    const dateCreation = new Date(utilisateur?.dateCreation).toLocaleDateString('fr-FR', {
         day: "numeric",
         month: "long",
         year: "numeric",
@@ -26,8 +39,8 @@ export default async function Page(props: PageProps<'/compte/detail/[idUser]'>){
         minute: "2-digit",
     })
 
-    const dateDerniereConnexion = user?.derniereConnexion ?
-        new Date(user?.derniereConnexion).toLocaleDateString('fr-FR', {
+    const dateDerniereConnexion = utilisateur?.derniereConnexion ?
+        new Date(utilisateur?.derniereConnexion).toLocaleDateString('fr-FR', {
             day: "numeric",
             month: "long",
             year: "numeric",
@@ -49,22 +62,41 @@ export default async function Page(props: PageProps<'/compte/detail/[idUser]'>){
     const totalPagesMesQuiz = Math.max(1, Math.ceil((countMesQuiz ?? 0) / nbrElement))
     const aPagePrecedenteMesQuiz = pageCourranteMesQuiz > 1
     const aProchainePageMesQuiz = pageCourranteMesQuiz < totalPagesMesQuiz
+
+    const { data: { user } } = await supabase.auth.getUser()
+    const est_admin = user?.app_metadata?.est_admin
+
+
+
     return (
         <div className=" flex justify-center ">
 
 
             <div className=" container   flex flex-col gap-10 my-25 justify-center text-center align-middle">
-                <h1 className="text-2xl font-bold ">{user.userName}</h1>
+                <h1 className="text-2xl font-bold ">{utilisateur.userName}</h1>
                 <div className='  flex justify-center '>
 
                     <div className=' flex flex-col gap-10 m-2 p-5 border-2 rounded-2xl'>
 
                         <div className='flex justify-between'>
                             <p className='text-lg'>Nom d'utilisateur :  </p>
-                            <p className='text-lg'> {user?.userName}</p>
+                            <p className='text-lg'> {utilisateur?.userName}</p>
 
                         </div>
-                        <hr></hr>
+                        <hr />
+                        {utilisateur?.est_admin == true &&
+                            <div>
+                                <div className='flex justify-between '>
+                                    <p className='text-lg'>Role:  </p>
+                                    <p className='text-lg'>Administateur</p>
+
+                                </div>
+                            </div>
+                        }
+                        {utilisateur?.est_admin == true &&
+
+                            <hr></hr>
+                        }
 
                         <div className='flex justify-between'>
 
@@ -78,15 +110,27 @@ export default async function Page(props: PageProps<'/compte/detail/[idUser]'>){
                             <p>Dernière connexion du compte : </p>
                             <p className='text-lg'>{dateDerniereConnexion}</p>
                         </div>
-                        
-                       
+
+
                     </div>
+                </div>
+                <div>
+                    {est_admin && (
+
+                        <SupprimerUserAdminComponant id_user={idUser} />
+
+                    )}
+                    {est_admin && utilisateur.est_admin !== true &&
+                    <div className='pt-10'>
+
+                        <DevenirAdminComponant id_user={idUser} />
+                    </div>
+                    }
                 </div>
                 <hr />
 
-              
                 <div >
-                    <h2 className='text-2xl font-bold mb-10'>Quiz créé par {user.userName}</h2>
+                    <h2 className='text-2xl font-bold mb-10'>Quiz créé par {utilisateur.userName}</h2>
                     <div className='bg-gray-300 w-full p-3 justify-center items-center rounded-2xl flex gap-5 flex-col'>
 
                         <ul className='bg-gray-300 w-full p-3 justify-center rounded-2xl flex gap-5 flex-wrap'>
@@ -104,17 +148,10 @@ export default async function Page(props: PageProps<'/compte/detail/[idUser]'>){
                                     >
                                         Jouer
                                     </a>
-                                    
+
 
                                 </li>
                             ))}
-                            {mesQuiz?.length == 0 &&
-                                <div className='py-10'>
-
-                                    <p className=' py-4 text-2xl'>Vous n'avez pas encore créé de quiz</p>
-                                    <a href='/creation-quiz' className={cn(buttonVariants(), 'text-2xl h-12')}>Créer en un!</a>
-                                </div>
-                            }
 
                         </ul>
                         <span className='flex items-center'>

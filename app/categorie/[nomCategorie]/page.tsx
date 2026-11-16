@@ -118,7 +118,7 @@ async function Createur({ id }: { id: string | null }) {
     if (nom == null)
         return <p className="font-bold">Inconnu</p>
     else 
-        return <Button variant={'link'} className='font-bold' render={<Link href={`/compte/detail/${id}`}/>}>{nom}</Button>
+        return <Button variant={'link'} className='font-bold' nativeButton={false} render={<Link href={`/compte/detail/${id}`}/>}>{nom}</Button>
 }
 
 function Etoile({ nbrEtoilePleine, nbrEtoileVide }: { nbrEtoilePleine: number, nbrEtoileVide: number }) {

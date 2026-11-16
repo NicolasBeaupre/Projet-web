@@ -128,6 +128,17 @@ export async function supprimerQuizAdmin( id_quiz: string) {
     
 }
 
+export async function supprimerSignalement(id:string){
+   const supabase = await createClient();
+  const {data, error:authErreur} = await supabase.auth.getUser()
+  if (authErreur || !data.user) throw new Error("Vous devez être connecté afin d'effectuer cette action.")
+  if( data.user?.app_metadata?.est_admin !== true) throw new Error("Vous devez être connecté en tant qu'administrateur, afin d'effectuer cette action.")
+  const { error } = await supabase
+    .schema('public')
+    .from('signalement')
+    .delete().match({ id: id })
+}
+
 
 
 

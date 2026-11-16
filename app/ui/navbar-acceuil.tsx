@@ -34,7 +34,7 @@ import {
     navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu"
 
-export default function NavbarAcceuil({ user, code }: { user: User | null, code: string|null }) {
+export default function NavbarAcceuil({ user, code }: { user: User | null, code: string | null }) {
     const [open, setOpen] = useState(false)
 
     return (
@@ -57,7 +57,9 @@ export default function NavbarAcceuil({ user, code }: { user: User | null, code:
                         <Button className="" size="icon"><SearchIcon /></Button>
                     </Field>
                 </div>
-
+                {user !== null && user?.app_metadata?.est_admin &&
+                    <Button nativeButton={false} render={<Link href="/signalement" />}>Signalement</Button>
+                }
 
                 <div className="flex items-center  gap-2">
                     {user == null &&
@@ -68,6 +70,7 @@ export default function NavbarAcceuil({ user, code }: { user: User | null, code:
                             <Button className="" variant="secondary" render={<Link href="/compte/creation" />} nativeButton={false}  >Rejoindre</Button>
                         </div>
                     }
+
                     {user !== null && code == null &&
 
                         <NavigationMenu className="hidden md:flex">
@@ -79,7 +82,7 @@ export default function NavbarAcceuil({ user, code }: { user: User | null, code:
                                         <ul className="w-50">
                                             <li><a className={buttonVariants({ variant: 'outline' })} href="/creer-salle">Créer une salle multijoueur</a></li>
                                             <li><a className={buttonVariants({ variant: 'outline' })} href="/rejoindre-salle">Rejoindre un salle multijoueur</a></li>
-                                            
+
                                         </ul>
                                     </NavigationMenuContent>
                                 </NavigationMenuItem>
@@ -98,7 +101,7 @@ export default function NavbarAcceuil({ user, code }: { user: User | null, code:
                                             <li><a className={buttonVariants({ variant: 'outline' })} href={`/salle/${code}`}>Votre salle en cours</a></li>
                                             <li><a className={buttonVariants({ variant: 'outline' })} href="/creer-salle">Créer une salle multijoueur</a></li>
                                             <li><a className={buttonVariants({ variant: 'outline' })} href="/rejoindre-salle">Rejoindre un salle multijoueur</a></li>
-                                            
+
                                         </ul>
                                     </NavigationMenuContent>
                                 </NavigationMenuItem>

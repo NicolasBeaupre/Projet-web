@@ -20,3 +20,20 @@ export async function supprimerCompte() {
     redirect('/compte/connexion')
 
 }
+
+export async function supprimerCompteEnTantAdmin(id: string) {
+    const supabase = await createAdminClient();
+    const supabaseServer = await createClient()
+    const { data: { user } } = await supabaseServer.auth.getUser()
+    if ( !user?.app_metadata?.est_admin) return 
+
+    const { data, error } = await supabase.auth.admin.deleteUser(
+        id
+    )
+
+    if (error) throw new Error(error.message)
+
+    
+    redirect('/')
+
+}
