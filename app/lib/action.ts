@@ -87,7 +87,7 @@ export async function lireLesQuizs() {
     .from('Quiz')
     .select('id, nomQuiz')
   if (error) {
-     throw new Error('Quiz inexistant', error)
+    throw new Error('Quiz inexistant', error)
   }
 
   return donneeQuiz.map((quiz) => ({
@@ -127,25 +127,25 @@ export async function supprimerQuiz(id_joueur: string, id_quiz: string) {
   else redirect("/compte")
 }
 
-export async function supprimerQuizAdmin( id_quiz: string) {
+export async function supprimerQuizAdmin(id_quiz: string) {
   const supabase = await createClient();
-  const {data, error:authErreur} = await supabase.auth.getUser()
+  const { data, error: authErreur } = await supabase.auth.getUser()
   if (authErreur || !data.user) throw new Error("Vous devez être connecté afin d'effectuer cette action.")
-  if( data.user?.app_metadata?.est_admin !== true) throw new Error("Vous devez être connecté en tant qu'administrateur, afin d'effectuer cette action.")
+  if (data.user?.app_metadata?.est_admin !== true) throw new Error("Vous devez être connecté en tant qu'administrateur, afin d'effectuer cette action.")
   const { error } = await supabase
     .schema('public')
     .from('Quiz')
     .delete().match({ id: id_quiz })
 
-    if(error) throw new Error(error.message)
+  if (error) throw new Error(error.message)
 
 }
 
-export async function supprimerSignalement(id:string){
-   const supabase = await createClient();
-  const {data, error:authErreur} = await supabase.auth.getUser()
+export async function supprimerSignalement(id: string) {
+  const supabase = await createClient();
+  const { data, error: authErreur } = await supabase.auth.getUser()
   if (authErreur || !data.user) throw new Error("Vous devez être connecté afin d'effectuer cette action.")
-  if( data.user?.app_metadata?.est_admin !== true) throw new Error("Vous devez être connecté en tant qu'administrateur, afin d'effectuer cette action.")
+  if (data.user?.app_metadata?.est_admin !== true) throw new Error("Vous devez être connecté en tant qu'administrateur, afin d'effectuer cette action.")
   const { error } = await supabase
     .schema('public')
     .from('signalement')
@@ -392,7 +392,7 @@ export async function lirePointage(code_salle: string) {
     .from('salle_joueur')
     .select()
     .match({ id_salle: code_salle })
-    .order('points',{ascending:false})
+    .order('points', { ascending: false })
 
   return points
 }
@@ -510,9 +510,9 @@ export async function reinitialiserReponse(utilisateurId: any, code_salle: strin
       }
     )
     .match({ id_joueur: utilisateurId, id_salle: code_salle })
-  }
+}
 
-export async function ajouterSignalement(id_quiz:string,message:string,id_user?:string ){
+export async function ajouterSignalement(id_quiz: string, message: string, id_user?: string) {
 
   const supabase = await createClient();
   const { error } = await supabase
@@ -522,7 +522,7 @@ export async function ajouterSignalement(id_quiz:string,message:string,id_user?:
       {
         description: message,
         id_quiz: id_quiz,
-        user : id_user
+        user: id_user
       }
     ])
 
@@ -541,4 +541,27 @@ export async function lireSignalement() {
   else return signalement
 
 
+}
+
+const ITEMS_PER_PAGE = 6;
+export async function fetchFilteredQuiz(query: string,currentPage: number) {
+  const supabase = await createClient();
+  const offset = (currentPage - 1) * ITEMS_PER_PAGE;
+
+  try {
+    let requeteFiltre = supabase
+    .schema('public')
+    .from('Quiz')
+    .select()
+    .range(offset, offset + ITEMS_PER_PAGE - 1)
+
+    if (query) {
+      requeteFiltre = requeteFiltre.ilike('nomQuiz', `%${query}%`)
+    }
+    const {data: quizFiltrer, error} = await requeteFiltre
+    return quizFiltrer || [];
+  } catch (error) {
+    console.error('Database Error:', error);
+    throw new Error('Failed to fetch quiz.');
+  }
 }
