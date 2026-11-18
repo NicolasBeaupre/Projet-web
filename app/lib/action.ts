@@ -5,7 +5,7 @@ import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation';
 
 
-export default async function ajouterQuiz(data: any, utilisateurId: any) {
+export async function ajouterQuiz(data: any, utilisateurId: any) {
   const supabase = await createClient();
   const nomQuiz = data.nomQuiz.trim()
   const { data: quiz } = await supabase
@@ -30,6 +30,29 @@ export default async function ajouterQuiz(data: any, utilisateurId: any) {
         createur: utilisateurId
       }
     ])
+
+
+  return true
+
+
+}
+
+export async function modifierQuiz(data: any, utilisateurId: any, idQuiz: any) {
+  const supabase = await createClient();
+  const nomQuiz = data.nomQuiz.trim()
+
+  const { error } = await supabase
+    .schema('public')
+    .from('Quiz')
+    .update([
+      {
+        nomQuiz: nomQuiz,
+        imageURL: data.imageURL,
+        categorie: data.categorie,
+        questions: data.questions,
+      }
+    ])
+    .eq('id', idQuiz)
 
 
   return true

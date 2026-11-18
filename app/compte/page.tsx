@@ -158,6 +158,12 @@ export default async function Compte({ searchParams,
                                     >
                                         Jouer
                                     </a>
+                                    <a
+                                        href={`/modifier-quiz/${i.id}`}
+                                        className={cn(buttonVariants(), 'text-2xl h-12')}
+                                    >
+                                        Modifier
+                                    </a>
                                     <SupprimerQuizComponent id_quiz={i.id} id_user={user.id} />
 
                                 </li>
