@@ -138,7 +138,7 @@ export async function supprimerQuizAdmin( id_quiz: string) {
     .delete().match({ id: id_quiz })
 
     if(error) throw new Error(error.message)
-    
+
 }
 
 export async function supprimerSignalement(id:string){
@@ -510,9 +510,10 @@ export async function reinitialiserReponse(utilisateurId: any, code_salle: strin
       }
     )
     .match({ id_joueur: utilisateurId, id_salle: code_salle })
+  }
 
 export async function ajouterSignalement(id_quiz:string,message:string,id_user?:string ){
-  
+
   const supabase = await createClient();
   const { error } = await supabase
     .schema('public')
@@ -524,12 +525,12 @@ export async function ajouterSignalement(id_quiz:string,message:string,id_user?:
         user : id_user
       }
     ])
-  
+
 
 }
 
 export async function lireSignalement() {
- 
+
   const supabase = await createClient();
   const { data: signalement, error } = await supabase
     .schema('public')
