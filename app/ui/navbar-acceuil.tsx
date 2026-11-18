@@ -1,6 +1,7 @@
 "use client"
 import * as React from "react"
 import { useState } from "react"
+import { DialogQuiz } from "./filtre/dialog"
 import { Button } from "@/components/ui/button"
 import { Field } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
@@ -31,7 +32,6 @@ import {
     NavigationMenuTrigger,
     navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu"
-import RechercheQuiz from "./recherche"
 
 export default function NavbarAcceuil({ user, code }: { user: User | null, code: string | null }) {
     const [open, setOpen] = useState(false)
@@ -51,11 +51,9 @@ export default function NavbarAcceuil({ user, code }: { user: User | null, code:
 
                 {/* pc nav */}
                 <div className="hidden md:flex items-center gap-2">
-                    <RechercheQuiz placeholder="Science, Culture, Jeux vidéos..."></RechercheQuiz>
-                    {/* <Field orientation="horizontal" className="w-100 ">
-                        <Input type="search" placeholder="Science, Culture, Jeux vidéos..." />
-                        <Button className="" size="icon"><SearchIcon /></Button>
-                    </Field> */}
+
+                    <DialogQuiz></DialogQuiz>
+
                 </div>
                 {user !== null && user?.app_metadata?.est_admin &&
                     <Button nativeButton={false} render={<Link href="/signalement" />}>Signalement</Button>

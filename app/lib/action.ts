@@ -544,16 +544,15 @@ export async function lireSignalement() {
 }
 
 const ITEMS_PER_PAGE = 6;
-export async function fetchFilteredQuiz(query: string,currentPage: number) {
+export async function fetchFilteredQuiz(query: string) {
   const supabase = await createClient();
-  const offset = (currentPage - 1) * ITEMS_PER_PAGE;
 
   try {
     let requeteFiltre = supabase
     .schema('public')
     .from('Quiz')
     .select()
-    .range(offset, offset + ITEMS_PER_PAGE - 1)
+    .range(0, ITEMS_PER_PAGE)
 
     if (query) {
       requeteFiltre = requeteFiltre.ilike('nomQuiz', `%${query}%`)
