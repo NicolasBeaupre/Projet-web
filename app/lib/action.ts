@@ -112,7 +112,7 @@ export async function lireUnQuiz(data: number) {
   return donneeQuiz
 }
 
-//Supprime un joueurs d'une salle
+
 export async function supprimerQuiz(id_joueur: string, id_quiz: string) {
   const supabase = await createClient();
   const { data, error: authErreur } = await supabase.auth.getUser()
@@ -125,6 +125,31 @@ export async function supprimerQuiz(id_joueur: string, id_quiz: string) {
 
   if (error) throw new Error(error.message)
   else redirect("/compte")
+}
+
+export async function supprimerQuizAdmin( id_quiz: string) {
+  const supabase = await createClient();
+  const {data, error:authErreur} = await supabase.auth.getUser()
+  if (authErreur || !data.user) throw new Error("Vous devez être connecté afin d'effectuer cette action.")
+  if( data.user?.app_metadata?.est_admin !== true) throw new Error("Vous devez être connecté en tant qu'administrateur, afin d'effectuer cette action.")
+  const { error } = await supabase
+    .schema('public')
+    .from('Quiz')
+    .delete().match({ id: id_quiz })
+
+    if(error) throw new Error(error.message)
+
+}
+
+export async function supprimerSignalement(id:string){
+   const supabase = await createClient();
+  const {data, error:authErreur} = await supabase.auth.getUser()
+  if (authErreur || !data.user) throw new Error("Vous devez être connecté afin d'effectuer cette action.")
+  if( data.user?.app_metadata?.est_admin !== true) throw new Error("Vous devez être connecté en tant qu'administrateur, afin d'effectuer cette action.")
+  const { error } = await supabase
+    .schema('public')
+    .from('signalement')
+    .delete().match({ id: id })
 }
 
 
@@ -485,5 +510,35 @@ export async function reinitialiserReponse(utilisateurId: any, code_salle: strin
       }
     )
     .match({ id_joueur: utilisateurId, id_salle: code_salle })
+  }
+
+export async function ajouterSignalement(id_quiz:string,message:string,id_user?:string ){
+
+  const supabase = await createClient();
+  const { error } = await supabase
+    .schema('public')
+    .from('signalement')
+    .insert([
+      {
+        description: message,
+        id_quiz: id_quiz,
+        user : id_user
+      }
+    ])
+
+
+}
+
+export async function lireSignalement() {
+
+  const supabase = await createClient();
+  const { data: signalement, error } = await supabase
+    .schema('public')
+    .from('signalement')
+    .select()
+
+  if (signalement === null) return []
+  else return signalement
+
 
 }

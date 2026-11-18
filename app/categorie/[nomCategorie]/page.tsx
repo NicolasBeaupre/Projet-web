@@ -1,12 +1,14 @@
-import Jeu from "@/app/ui/quiz/jeu"
 import { lireLesQuizDUneCategorie, lireCategoriesQuiz } from "@/app/lib/action";
 import { createClient } from '@/lib/supabase/server'
 import { notFound } from "next/navigation";
 import { cn } from "cn";
-import { buttonVariants } from "@/components/ui/button";
+import { buttonVariants, Button } from "@/components/ui/button";
 import { lireUtilisateurNomAdmin } from "@/app/lib/actionAdmin";
-import { CircleX, Star, CircleCheck } from "lucide-react";
+import { Star } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link"
+
+import { SignalerQuizComponent } from "@/app/ui/admin/signaler-quiz";
 
 export default async function Page(props: PageProps<'/categorie/[nomCategorie]'>) {
     const { nomCategorie } = await props.params
@@ -23,7 +25,8 @@ export default async function Page(props: PageProps<'/categorie/[nomCategorie]'>
         notFound()
     }
     const quiz = await lireLesQuizDUneCategorie(nomCategorie)
-
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
 
 
     return (
@@ -43,7 +46,7 @@ export default async function Page(props: PageProps<'/categorie/[nomCategorie]'>
                         let nbrNote = 0
                         if (i.notes !== null) {
 
-                            i.notes.forEach((n:{note:number}) => {
+                            i.notes.forEach((n: { note: number }) => {
                                 noteTotal += n.note
                             });
                             moyenneNote = Math.ceil(noteTotal / i.notes.length)
@@ -55,7 +58,13 @@ export default async function Page(props: PageProps<'/categorie/[nomCategorie]'>
                         return (
 
                             <li key={i.id} className='flex flex-col justify-between align-middle items-center border-2 p-3 bg-secondary rounded-2xl  gap-5 w-80'>
-                                <h3 className='text-2xl wrap-break-word text-center'>{i.nomQuiz}</h3>
+                                <div className="relative flex w-full items-center justify-center">
+
+                                    <h3 className='text-2xl wrap-break-word text-center'>{i.nomQuiz}</h3>
+                                    <div className="absolute right-0 ">
+                                        <SignalerQuizComponent id_quiz={i.id} est_admin={user?.app_metadata?.est_admin} />
+                                    </div>
+                                </div>
 
                                 {i.imageUrl !== '' || i.imageUrl !== null &&
 
@@ -106,7 +115,10 @@ export default async function Page(props: PageProps<'/categorie/[nomCategorie]'>
 async function Createur({ id }: { id: string | null }) {
     if (!id) return <p>Inconnu</p>
     const nom = await lireUtilisateurNomAdmin(id)
-    return <p className="font-bold">{nom ?? 'Inconnu'}</p>
+    if (nom == null)
+        return <p className="font-bold">Inconnu</p>
+    else 
+        return <Button variant={'link'} className='font-bold' nativeButton={false} render={<Link href={`/compte/detail/${id}`}/>}>{nom}</Button>
 }
 
 function Etoile({ nbrEtoilePleine, nbrEtoileVide }: { nbrEtoilePleine: number, nbrEtoileVide: number }) {
