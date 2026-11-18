@@ -5,38 +5,38 @@ import {
 } from '@heroicons/react/24/outline';
 import { useForm, useFieldArray, Controller } from 'react-hook-form';
 import Select from 'react-select';
-import ajouterQuiz from '@/app/lib/action';
+import { ajouterQuiz, modifierQuiz } from '@/app/lib/action';
 import { Quiz } from '@/app/lib/definitions';
 import type { User } from '@supabase/supabase-js'
 import React from 'react';
 import { useRouter } from 'next/navigation';
 
 const categoriesQuiz = [
-  {label:"Science", value:"science"},
-  {label:"Culture", value:"culture"},
-  {label:"Jeux vidéo", value:"jeux"},
-{label:"Histoire", value:"histoire"},
-{label:"Mathématiques", value:"mathematiques"},
-{label:"Musique", value:"musique"},
-{label:"Sport", value:"sport"},
-{label:"Littérature", value:"litterature"},
-{label:"Animaux", value:"animaux"},
-{label:"Autre...", value:"autre"}, ]
+  { label: "Science", value: "science" },
+  { label: "Culture", value: "culture" },
+  { label: "Jeux vidéo", value: "jeux" },
+  { label: "Histoire", value: "histoire" },
+  { label: "Mathématiques", value: "mathematiques" },
+  { label: "Musique", value: "musique" },
+  { label: "Sport", value: "sport" },
+  { label: "Littérature", value: "litterature" },
+  { label: "Animaux", value: "animaux" },
+  { label: "Autre...", value: "autre" },]
 
-export default function QuizForm({ user }: {user: User | null }) {
+export default function QuizForm({ user, quizInitial }: { user: User | null; quizInitial?: Quiz }) {
 
   const router = useRouter()
-
+  const enModification = Boolean(quizInitial?.id)
   const { control, register, handleSubmit, formState: { errors } } = useForm<Quiz>({
-    defaultValues: {
+    defaultValues: quizInitial || {
       nomQuiz: '',
       imageURL: '',
       categorie: '',
       questions: [
         { titre: '', reponse1: '', reponse2: '', reponse3: '', reponse4: '', bonneReponse: 'reponse1' }
       ],
-      notes:[],
-      createur:'',
+      notes: [],
+      createur: '',
     }
   })
 
@@ -47,13 +47,26 @@ export default function QuizForm({ user }: {user: User | null }) {
   const [estDoublon, setEstDoublon] = React.useState(false)
 
   const onSubmit = async (data: any) => {
-    if (!await ajouterQuiz(data, user?.id)) {
-      handleAffichage()
+    if (enModification) {
+      if (!await modifierQuiz(data, user?.id, quizInitial?.id)) {
+        handleAffichage()
 
+      }
+      else {
+        router.push('/')
+      }
     }
-    else{
-      router.push('/')
+    else {
+      if (!await ajouterQuiz(data, user?.id)) {
+        handleAffichage()
+
+      }
+      else {
+        router.push('/')
+      }
     }
+
+
 
   }
   const handleAffichage = () => {
@@ -136,34 +149,34 @@ export default function QuizForm({ user }: {user: User | null }) {
                 control={control}
                 name="categorie"
                 rules={{ required: true }}
-                render={({field}) =>(
-                    <Select
+                render={({ field }) => (
+                  <Select
                     instanceId={"quiz"}
-                      options={categoriesQuiz}
-                      menuPlacement="auto"
-                      placeholder="Sélectionner une catégorie ..."
-                      styles={{
-                        control: (baseStyles, state) => ({
-                          ...baseStyles,
-                          borderColor: errors.categorie ? 'red' : 'black',
-                          color: state.isFocused ? 'black' : 'grey',
+                    options={categoriesQuiz}
+                    menuPlacement="auto"
+                    placeholder="Sélectionner une catégorie ..."
+                    styles={{
+                      control: (baseStyles, state) => ({
+                        ...baseStyles,
+                        borderColor: errors.categorie ? 'red' : 'black',
+                        color: state.isFocused ? 'black' : 'grey',
 
-                        }),
-                        option: (baseStyles, state) => ({
-                          ...baseStyles,
-                          color: state.isFocused ? 'black' : 'grey',
-                          boxShadow: state.isFocused ? 'black' : 'red',
-                        })
-                      }}
-                      isSearchable={false}
+                      }),
+                      option: (baseStyles, state) => ({
+                        ...baseStyles,
+                        color: state.isFocused ? 'black' : 'grey',
+                        boxShadow: state.isFocused ? 'black' : 'red',
+                      })
+                    }}
+                    isSearchable={false}
 
-                      value={categoriesQuiz.find((option) => option.value == field.value)}
+                    value={categoriesQuiz.find((option) => option.value == field.value)}
 
-                      onChange={(optionSelectionne) =>{field.onChange(optionSelectionne ? optionSelectionne.value : "")}}
+                    onChange={(optionSelectionne) => { field.onChange(optionSelectionne ? optionSelectionne.value : "") }}
 
-                      name={field.name}
+                    name={field.name}
 
-                    />
+                  />
                 )
                 }
               />
@@ -243,8 +256,8 @@ export default function QuizForm({ user }: {user: User | null }) {
               <span className="sr-only text-black">Ajouter une question</span>
               <PlusIcon className="w-5 text-black" />
             </button>
-              <button type='submit'
-                className="rounded-md border p-2 hover:bg-gray-100 text-black">Terminer la création</button>
+            <button type='submit'
+              className="rounded-md border p-2 hover:bg-gray-100 text-black">Terminer la création</button>
           </div>
         </div>
 
