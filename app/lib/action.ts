@@ -544,7 +544,8 @@ export async function lireSignalement() {
 }
 
 const ITEMS_PER_PAGE = 6;
-export async function fetchFilteredQuiz(query: string) {
+export async function fetchFilteredQuiz(query: string , currentPage: number) {
+  const offset = (currentPage - 1) * ITEMS_PER_PAGE;
   const supabase = await createClient();
 
   try {
@@ -552,7 +553,7 @@ export async function fetchFilteredQuiz(query: string) {
     .schema('public')
     .from('Quiz')
     .select()
-    .range(0, ITEMS_PER_PAGE)
+    .range(offset, offset + ITEMS_PER_PAGE - 1)
 
     if (query) {
       requeteFiltre = requeteFiltre.ilike('nomQuiz', `%${query}%`)
@@ -562,5 +563,29 @@ export async function fetchFilteredQuiz(query: string) {
   } catch (error) {
     console.error('Database Error:', error);
     throw new Error('Failed to fetch quiz.');
+  }
+}
+
+export async function fetchQuizPages(query: string) {
+    const supabase = await createClient();
+
+    try {
+      let requeteNbPages = supabase
+      .schema('public')
+      .from('Quiz')
+      .select('*',{count: 'exact', head:true});
+      if (query) {
+        requeteNbPages = requeteNbPages.ilike('nomQuiz', `%${query}%`);
+      }
+
+      const {count, error} = await requeteNbPages;
+      if (error) {
+        throw error;
+      }
+      return Math.max(1, Math.ceil(Number(count ?? 0) / ITEMS_PER_PAGE));
+
+  } catch (error) {
+    console.error('Database Error:', error);
+    throw new Error('Failed to fetch total number of invoices.');
   }
 }

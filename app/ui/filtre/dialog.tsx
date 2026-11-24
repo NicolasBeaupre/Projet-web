@@ -1,3 +1,4 @@
+
 import { Button } from "@/components/ui/button"
 import {
     Dialog,
@@ -13,37 +14,59 @@ import { Field, FieldGroup } from "@/components/ui/field"
 import { SearchIcon } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { fetchFilteredQuiz, fetchQuizPages } from "@/app/lib/action"
+import { lusitana } from '@/app/ui/fonts'
+import RechercheQuiz from "./recherche"
+import QuizTable from "./table"
+import Pagination from "./pagination"
+import { Suspense, useState, useEffect, act } from 'react';
+import { QuizsTableSkeleton } from "../skeleton-quiz"
+import { useSearchParams } from "next/navigation"
 
-export function DialogQuiz() {
+export  function DialogQuiz() {
+  const searchParams = useSearchParams()
+  const query = searchParams.get('query') || ''
+  const currentPage = Number(searchParams.get('page')) || 1
+  const [totalPages, setTotalPages] = useState(1)
+  const [open, setOpen] = useState(false);
+
+  useEffect(() => {
+    let active = true
+
+    fetchQuizPages(query).then((pages) =>{
+        if (active) {
+            setTotalPages(Math.max(1, pages))
+
+        }
+    }).catch((error) =>{
+        console.error('Erreur de chargement des quizs : ', error)
+    })
+    return() => {
+        active = false
+    }
+  },[query])
     return (
-        <Dialog>
+        <Dialog open={open} onOpenChange={setOpen}>
             <form>
                 <DialogTrigger render={<Button className="text-gray-500" variant="outline">
                     <Field orientation="horizontal" className="w-100 ">Science, Culture, Jeux vidéos...
-
-
                     </Field><SearchIcon /> </Button>} />
-                <DialogContent className="sm:max-w-sm">
-                    <DialogHeader>
-                        <DialogTitle>Edit profile</DialogTitle>
-                        <DialogDescription>
-                            Make changes to your profile here. Click save when you&apos;re
-                            done.
-                        </DialogDescription>
-                    </DialogHeader>
-                    <FieldGroup>
-                        <Field>
-                            <Label htmlFor="name-1">Name</Label>
-                            <Input id="name-1" name="name" defaultValue="Pedro Duarte" />
-                        </Field>
-                        <Field>
-                            <Label htmlFor="username-1">Username</Label>
-                            <Input id="username-1" name="username" defaultValue="@peduarte" />
-                        </Field>
-                    </FieldGroup>
-                    <DialogFooter>
-                        <DialogClose render={<Button variant="outline">Cancel</Button>} />
-                        <Button type="submit">Save changes</Button>
+                 <DialogContent className="sm:max-w-sm">
+                    <div className="w-full">
+                        <div className="flex w-full items-center justify-between">
+                            <h1 className={`${lusitana.className} text-2xl`}>Quizs</h1>
+                        </div>
+                        <div className="mt-4 flex items-center justify-between gap-2 md:mt-8">
+                            <RechercheQuiz placeholder="Recherchez un quiz..." />
+                        </div>
+                            <QuizTable query={query} currentPage={currentPage} onSelectQuiz={() => setOpen(false)}/>
+
+                        <div className="mt-5 flex w-full justify-center">
+                            <Pagination totalPages={totalPages} />
+                        </div>
+                    </div>
+                     <DialogFooter>
+                        <DialogClose render={<Button variant="outline">Annuler</Button>} />
                     </DialogFooter>
                 </DialogContent>
             </form>

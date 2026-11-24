@@ -16,6 +16,7 @@ export default function RechercheQuiz({ placeholder }: { placeholder: string }) 
 
   function handleSearch(term: string) {
     const params = new URLSearchParams(searchParams);
+    params.set('page', '1')
     if (term) {
       params.set('query', term);
     } else {
