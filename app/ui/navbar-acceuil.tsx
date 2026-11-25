@@ -127,10 +127,7 @@ export default function NavbarAcceuil({ user, code }: { user: User | null, code:
                         <SheetContent side="right" className=" pl-3">
                             <SheetTitle className="text-left pt-3 text-2xl"> <Button variant="link" className="text-3xl font-bold" render={<Link href="/" />} nativeButton={false}  >Quiztro</Button></SheetTitle>
                             <nav className="mt-6 flex flex-col gap-4 justify-between h-full">
-                                <Field className="mb-20" orientation="horizontal">
-                                    <Input type="search" placeholder="Science, Culture, Jeux vidéos..." />
-                                    <Button className="" size="icon"><SearchIcon /></Button>
-                                </Field>
+
 
 
                                 <div className="flex flex-col gap-2 my-15 justify-between flex-1">
