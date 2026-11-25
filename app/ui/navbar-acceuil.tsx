@@ -50,7 +50,7 @@ export default function NavbarAcceuil({ user, code }: { user: User | null, code:
                 </div>
 
                 {/* pc nav */}
-                <div className="hidden md:flex items-center gap-2">
+                <div className="flex items-center gap-2">
 
                     <DialogQuiz></DialogQuiz>
 
