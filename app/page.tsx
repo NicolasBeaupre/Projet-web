@@ -3,7 +3,14 @@ import PlaceholderContenue from '@/app/ui/placeholder-contenue'
 import { Button, buttonVariants } from "@/components/ui/button"
 import { lireCategoriesQuiz } from './lib/action';
 import { cn } from 'cn';
-export default async function Home() {
+export default async function Home(props: {
+  searchParams?: Promise<{
+    query?: string;
+    page?: string;
+  }>;
+}) {
+  const searchParams = await props.searchParams;
+  const query = searchParams?.query || '';
   // throw new Error("bob")
   const Categorie = await lireCategoriesQuiz()
   return (
@@ -11,13 +18,13 @@ export default async function Home() {
       <main className="flex flex-1 w-full max-w-4xl  flex-col items-center justify-between py-20 bg-white dark:bg-black sm:items-start">
         {/* <PageEnConstruction /> */}
 
-       
+
         <div className='flex flex-col justify-center w-full  gap-20'>
           <div>
 
             <h1 className='text-2xl font-bold text-center mb-5'>Catégories</h1>
             <ul className='flex w-full justify-center gap-5 flex-wrap px-4'>
-            
+
 
               {Categorie?.map((i) => (
                 <li key={i}>
