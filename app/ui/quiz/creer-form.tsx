@@ -96,7 +96,7 @@ export default function QuizForm({ user, quizInitial }: { user: User | null; qui
               )}
 
             </div>
-            <div className="mb-4">
+            {/* <div className="mb-4">
               <label className="mb-2 block text-lg font-medium text-black">
                 URL de l'image désiré
               </label>
@@ -107,7 +107,7 @@ export default function QuizForm({ user, quizInitial }: { user: User | null; qui
               placeholder:text-gray-500"
               />
 
-            </div>
+            </div> */}
             <div className="mb-4">
               <label className="mb-2 block text-lg font-medium text-black">
                 Choisir la catégorie du quiz
