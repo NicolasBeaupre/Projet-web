@@ -49,9 +49,9 @@ export  function DialogQuiz() {
         <Dialog open={open} onOpenChange={setOpen}>
             <form>
                 <DialogTrigger render={<Button className="text-gray-500" variant="outline">
-                    <Field orientation="horizontal" className="w-100 ">Science, Culture, Jeux vidéos...
+                    <Field orientation="horizontal" className="w-25 sm:w-75 md:w-100"><span className="truncate">{"Science"}<span className="hidden sm:inline">{", Culture, Jeux vidéos"}</span>{"..."}</span>
                     </Field><SearchIcon /> </Button>} />
-                 <DialogContent className="sm:max-w-sm">
+                 <DialogContent className="sm:max-w-1/2 w-100">
                     <div className="w-full">
                         <div className="flex w-full items-center justify-between">
                             <h1 className={`${lusitana.className} text-2xl`}>Quizs</h1>
