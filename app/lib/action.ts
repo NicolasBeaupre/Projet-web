@@ -589,3 +589,22 @@ export async function fetchQuizPages(query: string) {
     throw new Error('Failed to fetch total number of invoices.');
   }
 }
+
+
+export async function obtenirQuizLesPlusRecent(){
+  const supabase = await createClient();
+
+  const { data: quiz, error } = await supabase
+    .schema('public')
+    .from('Quiz')
+    .select("*")
+    .order('id',{ascending:false})
+    .limit(4)
+  
+  return quiz
+  
+
+  
+
+
+}

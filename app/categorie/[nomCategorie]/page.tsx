@@ -27,7 +27,8 @@ export default async function Page(props: PageProps<'/categorie/[nomCategorie]'>
     const quiz = await lireLesQuizDUneCategorie(nomCategorie)
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
-
+    
+    
 
     return (
         <div className="flex justify-center">
@@ -66,18 +67,27 @@ export default async function Page(props: PageProps<'/categorie/[nomCategorie]'>
                                     </div>
                                 </div>
 
-                                {i.imageUrl !== '' || i.imageUrl !== null &&
+                                {i.categorie == 'autre' &&
 
-                                    <img src={src} alt="image du quiz" />
-                                }{i.imageUrl == '' || i.imageUrl == null &&
+                                     <Image
+
+                                        src={`/imagePlaceholder.png`}
+                                        width={200}
+                                        height={200}
+                                        alt="Page en construction"
+                                        className="object-contain rounded-3xl"
+                                        loading="eager"
+                                    />
+                                }{i.categorie !== 'autre' &&
 
 
                                     <Image
-                                        src="/imagePlaceholder.png"
-                                        width={150}
-                                        height={150}
+
+                                        src={`/${i.categorie}.png`}
+                                        width={300}
+                                        height={300}
                                         alt="Page en construction"
-                                        className="object-contain "
+                                        className="object-contain rounded-3xl"
                                         loading="eager"
                                     />
                                 }
