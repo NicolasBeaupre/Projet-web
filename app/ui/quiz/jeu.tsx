@@ -111,7 +111,7 @@ export default function Jeu({ quiz, user }: { quiz: Quiz, user: User | null }) {
 
                     <div className="flex justify-center items-center my-20 flex-col text-center">
                         <h2 className="text-2xl font-bold">Question {numeroQuestion + 1}</h2>
-                        <p className="text-lg">{quiz.questions[numeroQuestion].titre}</p>
+                        <p className="text-lg break-all w-full whitespace-normal max-w-2xl p-5">{quiz.questions[numeroQuestion].titre}</p>
 
                     </div>
 
@@ -121,7 +121,7 @@ export default function Jeu({ quiz, user }: { quiz: Quiz, user: User | null }) {
                                 <div key={numReponse} className='flex items-center flex-wrap my-5 rounded'>
                                     <div className="peer block w-5/6 sm:h-50 h-25 rounded-md border border-gray-200 focus:outline-black text-black
                   placeholder:text-gray-500 text-center m-auto">
-                                        <Button type="button" className="w-full h-full text-lg font-bold" onClick={() => handleClick(numReponse)}>{(quiz.questions?.[numeroQuestion] as any)?.[`reponse${numReponse}`]}</Button>
+                                        <Button type="button" className="w-full h-full px-5 py-15 text-lg font-bold break-all whitespace-normal max-w-2xl" onClick={() => handleClick(numReponse)}>{(quiz.questions?.[numeroQuestion] as any)?.[`reponse${numReponse}`]}</Button>
                                     </div>
                                 </div>
                             ))}
@@ -173,7 +173,7 @@ export default function Jeu({ quiz, user }: { quiz: Quiz, user: User | null }) {
                     </div>
                     <div className="flex items-center my-20 flex-col text-center">
                         <h2 className="text-2xl font-bold">Question {numeroQuestion + 1}</h2>
-                        <p className="text-lg">{quiz.questions[numeroQuestion].titre}</p>
+                        <p className="text-lg break-all w-full whitespace-normal max-w-2xl p-5">{quiz.questions[numeroQuestion].titre}</p>
 
                     </div>
 
@@ -184,13 +184,13 @@ export default function Jeu({ quiz, user }: { quiz: Quiz, user: User | null }) {
                                     <div className="peer block w-5/6 sm:h-50 h-25 rounded-md border border-gray-200 focus:outline-black text-black
                   placeholder:text-gray-500 text-center m-auto">
                                         {`reponse${numReponse}` == quiz.questions[numeroQuestion].bonneReponse &&
-                                            <Button type="button" className="w-full h-full text-lg font-bold bg-green-800" disabled>{(quiz.questions?.[numeroQuestion] as any)?.[`reponse${numReponse}`]}</Button>
+                                            <Button type="button" className="w-full h-full text-lg font-bold bg-green-800 px-5 py-15 break-all whitespace-normal max-w-2xl" disabled>{(quiz.questions?.[numeroQuestion] as any)?.[`reponse${numReponse}`]}</Button>
                                         }
                                         {`reponse${numReponse}` != quiz.questions[numeroQuestion].bonneReponse && `reponse${numReponse}` == reponse &&
-                                            <Button type="button" className="w-full h-full text-lg font-bold bg-red-800" disabled>{(quiz.questions?.[numeroQuestion] as any)?.[`reponse${numReponse}`]}</Button>
+                                            <Button type="button" className="w-full h-full text-lg font-bold bg-red-800 px-5 py-15 break-all whitespace-normal max-w-2xl" disabled>{(quiz.questions?.[numeroQuestion] as any)?.[`reponse${numReponse}`]}</Button>
                                         }
                                         {`reponse${numReponse}` != quiz.questions[numeroQuestion].bonneReponse && `reponse${numReponse}` != reponse &&
-                                            <Button type="button" className="w-full h-full text-lg font-bold" disabled>{(quiz.questions?.[numeroQuestion] as any)?.[`reponse${numReponse}`]}</Button>
+                                            <Button type="button" className="w-full h-full text-lg font-bold px-5 py-15 break-all whitespace-normal max-w-2xl" disabled>{(quiz.questions?.[numeroQuestion] as any)?.[`reponse${numReponse}`]}</Button>
                                         }
                                     </div>
                                 </div>

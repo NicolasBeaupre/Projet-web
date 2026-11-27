@@ -12,18 +12,18 @@ import React from 'react';
 import { useRouter } from 'next/navigation';
 
 const categoriesQuiz = [
-  {label:"Science", value:"science"},
-  {label:"Culture", value:"culture"},
-  {label:"Jeux vidéo", value:"jeux"},
-{label:"Histoire", value:"histoire"},
-{label:"Mathématiques", value:"mathematiques"},
-{label:"Musique", value:"musique"},
-{label:"Sport", value:"sport"},
-{label:"Littérature", value:"litterature"},
-{label:"Animaux", value:"animaux"},
-{label:"Autre...", value:"autre"}, ]
+  { label: "Science", value: "science" },
+  { label: "Culture", value: "culture" },
+  { label: "Jeux vidéo", value: "jeux" },
+  { label: "Histoire", value: "histoire" },
+  { label: "Mathématiques", value: "mathematiques" },
+  { label: "Musique", value: "musique" },
+  { label: "Sport", value: "sport" },
+  { label: "Littérature", value: "litterature" },
+  { label: "Animaux", value: "animaux" },
+  { label: "Autre...", value: "autre" },]
 
-export default function QuizForm({ user }: {user: User | null }) {
+export default function QuizForm({ user }: { user: User | null }) {
 
   const router = useRouter()
 
@@ -35,8 +35,8 @@ export default function QuizForm({ user }: {user: User | null }) {
       questions: [
         { titre: '', reponse1: '', reponse2: '', reponse3: '', reponse4: '', bonneReponse: 'reponse1' }
       ],
-      notes:[],
-      createur:'',
+      notes: [],
+      createur: '',
     }
   })
 
@@ -51,7 +51,7 @@ export default function QuizForm({ user }: {user: User | null }) {
       handleAffichage()
 
     }
-    else{
+    else {
       router.push('/')
     }
 
@@ -70,7 +70,12 @@ export default function QuizForm({ user }: {user: User | null }) {
                 Choisir le nom du quiz
               </label>
               <input
-                {...register("nomQuiz", { required: "Le nom du quiz ne peut pas être vide" })}
+                {...register("nomQuiz", { required: "Le nom du quiz ne peut pas être vide",
+                  maxLength: {
+                      value: 30,
+                      message: "Le nom ne peut pas dépasser 30 caractères."
+                    }
+                  })}
                 placeholder="Quiztro..."
                 className={`peer block w-full rounded-md border border-gray-200 py-2 pl-10 text-sm outline-gray-200 focus:outline-black text-black
               placeholder:text-gray-500 ${errors.nomQuiz || estDoublon ? "border-red-500 focus:outline-red-500" : "border-gray-200 focus:outline-black"}`}
@@ -136,34 +141,34 @@ export default function QuizForm({ user }: {user: User | null }) {
                 control={control}
                 name="categorie"
                 rules={{ required: true }}
-                render={({field}) =>(
-                    <Select
+                render={({ field }) => (
+                  <Select
                     instanceId={"quiz"}
-                      options={categoriesQuiz}
-                      menuPlacement="auto"
-                      placeholder="Sélectionner une catégorie ..."
-                      styles={{
-                        control: (baseStyles, state) => ({
-                          ...baseStyles,
-                          borderColor: errors.categorie ? 'red' : 'black',
-                          color: state.isFocused ? 'black' : 'grey',
+                    options={categoriesQuiz}
+                    menuPlacement="auto"
+                    placeholder="Sélectionner une catégorie ..."
+                    styles={{
+                      control: (baseStyles, state) => ({
+                        ...baseStyles,
+                        borderColor: errors.categorie ? 'red' : 'black',
+                        color: state.isFocused ? 'black' : 'grey',
 
-                        }),
-                        option: (baseStyles, state) => ({
-                          ...baseStyles,
-                          color: state.isFocused ? 'black' : 'grey',
-                          boxShadow: state.isFocused ? 'black' : 'red',
-                        })
-                      }}
-                      isSearchable={false}
+                      }),
+                      option: (baseStyles, state) => ({
+                        ...baseStyles,
+                        color: state.isFocused ? 'black' : 'grey',
+                        boxShadow: state.isFocused ? 'black' : 'red',
+                      })
+                    }}
+                    isSearchable={false}
 
-                      value={categoriesQuiz.find((option) => option.value == field.value)}
+                    value={categoriesQuiz.find((option) => option.value == field.value)}
 
-                      onChange={(optionSelectionne) =>{field.onChange(optionSelectionne ? optionSelectionne.value : "")}}
+                    onChange={(optionSelectionne) => { field.onChange(optionSelectionne ? optionSelectionne.value : "") }}
 
-                      name={field.name}
+                    name={field.name}
 
-                    />
+                  />
                 )
                 }
               />
@@ -201,7 +206,13 @@ export default function QuizForm({ user }: {user: User | null }) {
                   Titre de la question
                 </label>
                 <input
-                  {...register(`questions.${index}.titre` as any, { required: "Le titre de la question ne peut pas être vide" })}
+                  {...register(`questions.${index}.titre` as any, {
+                    required: "Le titre de la question ne peut pas être vide",
+                    maxLength: {
+                      value: 150,
+                      message: "Le titre ne peut pas dépasser 150 caractères."
+                    }
+                  })}
                   placeholder="Qu'elle est la couleur du soleil..."
                   className={`peer block w-full rounded-md border border-gray-200 py-2 pl-10 text-sm outline-gray-200 focus:outline-black text-black
                   placeholder:text-gray-500 ${errors.questions?.[index]?.titre ? "border-red-500 focus:outline-red-500" : "border-gray-200 focus:outline-black"}`}
@@ -217,11 +228,19 @@ export default function QuizForm({ user }: {user: User | null }) {
                     <div key={numReponse} className='flex items-center flex-wrap gap-5 m-5 border border-gray-300 border-8 rounded p-3'>
                       <div className='flex text-black'>
                         <input type='radio' value={`reponse${numReponse}`} defaultChecked={numReponse == 1}
-                          {...register(`questions.${index}.bonneReponse` as any, { required: true })} className='w-5 h-5' />
+                          {...register(`questions.${index}.bonneReponse` as any, {
+                            required: true
+                          })} className='w-5 h-5' />
                       </div>
                       <div className='w-full'>
-                        <input {...register(`questions.${index}.reponse${numReponse}` as any, { required: "Le champ de réponse ne peut pas être vide" })} placeholder={`Réponse ${numReponse}...`}
-                          className={`peer block w-full h-50 rounded-md border border-gray-200 py-2 pl-10 text-sm outline-gray-200 focus:outline-black text-black
+                        <textarea {...register(`questions.${index}.reponse${numReponse}` as any, {
+                          required: "Le champ de réponse ne peut pas être vide",
+                          maxLength: {
+                            value: 150,
+                            message: "La réponse ne peut pas dépasser 150 caractères."
+                          }
+                        })} placeholder={`Réponse ${numReponse}...`}
+                          className={`peer block w-full h-50 rounded-md border border-gray-200 py-2 px-10 text-sm outline-gray-200 focus:outline-black text-black resize-none
                   placeholder:text-gray-500 ${(errors.questions?.[index] as any)?.[`reponse${numReponse}`] ? "border-red-500 focus:outline-red-500" : "border-gray-200 focus:outline-black"}`}
                         />
                         {(errors.questions?.[index] as any)?.[`reponse${numReponse}`] && (
@@ -243,8 +262,8 @@ export default function QuizForm({ user }: {user: User | null }) {
               <span className="sr-only text-black">Ajouter une question</span>
               <PlusIcon className="w-5 text-black" />
             </button>
-              <button type='submit'
-                className="rounded-md border p-2 hover:bg-gray-100 text-black">Terminer la création</button>
+            <button type='submit'
+              className="rounded-md border p-2 hover:bg-gray-100 text-black">Terminer la création</button>
           </div>
         </div>
 
