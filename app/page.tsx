@@ -77,7 +77,7 @@ export default async function Home(props: {
                 <li key={i.id} className='flex flex-col justify-between align-middle items-center border-2 p-3 bg-secondary rounded-2xl  gap-5 w-60'>
                   <div className="relative flex w-full items-center justify-center">
 
-                    <h3 className='text-2xl wrap-break-word text-center'>{i.nomQuiz}</h3>
+                    <h3 className='text-2xl wrap-break-word text-center px-5 break-all whitespace-normal max-w-2xl'>{i.nomQuiz}</h3>
                     <div className="absolute right-0 ">
                       <SignalerQuizComponent id_quiz={i.id} est_admin={user?.app_metadata?.est_admin} />
                     </div>

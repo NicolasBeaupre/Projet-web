@@ -94,6 +94,12 @@ export default function ComponentsCreationQuizMultijoueur() {
 
             return
         }
+        if (nomLobby.length > 30) {
+            setMessageErreurNomLobby("Le nom de la salle ne peut pas dépasser 30 caractères.")
+            setErreurNomLobby(true)
+
+            return
+        }
         setLoading(true)
         const data: Salle =
         {
