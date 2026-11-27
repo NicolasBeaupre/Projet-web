@@ -27,8 +27,8 @@ export default async function Page(props: PageProps<'/categorie/[nomCategorie]'>
     const quiz = await lireLesQuizDUneCategorie(nomCategorie)
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
-    
-    
+
+
 
     return (
         <div className="flex justify-center">
@@ -61,7 +61,7 @@ export default async function Page(props: PageProps<'/categorie/[nomCategorie]'>
                             <li key={i.id} className='flex flex-col justify-between align-middle items-center border-2 p-3 bg-secondary rounded-2xl  gap-5 w-80'>
                                 <div className="relative flex w-full items-center justify-center">
 
-                                    <h3 className='text-2xl wrap-break-word text-center'>{i.nomQuiz}</h3>
+                                    <h3 className='text-2xl wrap-break-word text-center px-5 break-all whitespace-normal max-w-2xl'>{i.nomQuiz}</h3>
                                     <div className="absolute right-0 ">
                                         <SignalerQuizComponent id_quiz={i.id} est_admin={user?.app_metadata?.est_admin} />
                                     </div>
@@ -127,7 +127,7 @@ async function Createur({ id }: { id: string | null }) {
     const nom = await lireUtilisateurNomAdmin(id)
     if (nom == null)
         return <p className="font-bold">Inconnu</p>
-    else 
+    else
         return <Button variant={'link'} className='font-bold' nativeButton={false} render={<Link href={`/compte/detail/${id}`}/>}>{nom}</Button>
 }
 

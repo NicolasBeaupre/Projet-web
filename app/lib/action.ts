@@ -8,6 +8,9 @@ import { redirect } from 'next/navigation';
 export async function ajouterQuiz(data: any, utilisateurId: any) {
   const supabase = await createClient();
   const nomQuiz = data.nomQuiz.trim()
+  if (nomQuiz.length > 30 || nomQuiz.length < 1 ) {
+    return false
+  }
   const { data: quiz } = await supabase
     .schema('public')
     .from('Quiz')
