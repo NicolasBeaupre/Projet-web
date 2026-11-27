@@ -1,8 +1,15 @@
 import PageEnConstruction from '@/app/ui/construction';
 import PlaceholderContenue from '@/app/ui/placeholder-contenue'
 import { Button, buttonVariants } from "@/components/ui/button"
-import { lireCategoriesQuiz } from './lib/action';
+import { lireCategoriesQuiz, obtenirQuizLesPlusRecent } from './lib/action';
 import { cn } from 'cn';
+import { SignalerQuizComponent } from "@/app/ui/admin/signaler-quiz";
+import { lireUtilisateurNomAdmin } from "@/app/lib/actionAdmin";
+import { createClient } from '@/lib/supabase/server'
+import Image from "next/image";
+import Link from "next/link"
+import { Star } from "lucide-react";
+
 export default async function Home(props: {
   searchParams?: Promise<{
     query?: string;
@@ -13,14 +20,18 @@ export default async function Home(props: {
   const query = searchParams?.query || '';
   // throw new Error("bob")
   const Categorie = await lireCategoriesQuiz()
+  const quiz = await obtenirQuizLesPlusRecent()
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
   return (
     <div className="flex flex-col flex-1 items-center justify-center font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-4xl  flex-col items-center justify-between py-20 bg-white dark:bg-black sm:items-start">
+      <main className="flex flex-1 w-full container flex-col items-center justify-between py-20 bg-white dark:bg-black sm:items-start">
         {/* <PageEnConstruction /> */}
 
 
-        <div className='flex flex-col justify-center w-full  gap-20'>
-          <div>
+
+        <div className='w-full max-w-4xl  mx-auto'>
+          <div className='flex flex-col justify-center   gap-20'>
 
             <h1 className='text-2xl font-bold text-center mb-5'>Catégories</h1>
             <ul className='flex w-full justify-center gap-5 flex-wrap px-4'>
@@ -38,6 +49,89 @@ export default async function Home(props: {
             </ul>
           </div>
 
+
+        </div>
+
+        <div className='flex flex-col justify-center w-full  mt-30 '>
+          <h1 className='text-2xl font-bold text-center mb-5 py-10'>Quiz les plus récents</h1>
+          <ul className="flex flex-wrap gap-10 justify-center">
+            {quiz?.map((i) => {
+              const src = i.imageUrl || "https://blocks.astratic.com/img/general-img-landscape.png"
+              let noteTotal = 0
+              let moyenneNote = 0
+              let nbrEtoileVide = 5
+              let nbrNote = 0
+              if (i.notes !== null) {
+
+                i.notes.forEach((n: { note: number }) => {
+                  noteTotal += n.note
+                });
+                moyenneNote = Math.ceil(noteTotal / i.notes.length)
+
+                nbrEtoileVide -= moyenneNote
+                nbrNote = i.notes.length
+              }
+
+              return (
+
+                <li key={i.id} className='flex flex-col justify-between align-middle items-center border-2 p-3 bg-secondary rounded-2xl  gap-5 w-60'>
+                  <div className="relative flex w-full items-center justify-center">
+
+                    <h3 className='text-2xl wrap-break-word text-center'>{i.nomQuiz}</h3>
+                    <div className="absolute right-0 ">
+                      <SignalerQuizComponent id_quiz={i.id} est_admin={user?.app_metadata?.est_admin} />
+                    </div>
+                  </div>
+
+                  {i.categorie == 'autre' &&
+
+                    <Image
+
+                      src={`/imagePlaceholder.png`}
+                      width={200}
+                      height={200}
+                      alt="Page en construction"
+                      className="object-contain rounded-3xl"
+                      loading="eager"
+                    />
+                  }{i.categorie !== 'autre' &&
+
+
+                    <Image
+
+                      src={`/${i.categorie}.png`}
+                      width={300}
+                      height={300}
+                      alt="Page en construction"
+                      className="object-contain rounded-3xl"
+                      loading="eager"
+                    />
+                  }
+
+                  <div className="flex gap-3">
+                    <p>Créé le :</p>
+                    <time>{new Date(i.created_at).toLocaleDateString()}</time>
+                  </div>
+                  <div className="flex gap-3">
+                    <p>Créé par :</p>
+                    <Createur id={i.createur} />
+
+                  </div>
+                  <div className="flex gap-5">
+                    <Etoile nbrEtoilePleine={moyenneNote} nbrEtoileVide={nbrEtoileVide} />
+                    <p>({nbrNote} note(s))</p>
+                  </div>
+                  <a
+                    href={`/jeu/${i.id}`}
+                    className={cn(buttonVariants(), 'text-2xl h-12')}
+                  >
+                    Jouer
+                  </a>
+
+                </li>
+              )
+            })}
+          </ul>
         </div>
 
         {
@@ -104,4 +198,38 @@ export default async function Home(props: {
       </main>
     </div>
   );
+}
+
+async function Createur({ id }: { id: string | null }) {
+  if (!id) return <p>Inconnu</p>
+  const nom = await lireUtilisateurNomAdmin(id)
+  if (nom == null)
+    return <p className="font-bold">Inconnu</p>
+  else
+    return <Button variant={'link'} className='font-bold' nativeButton={false} render={<Link href={`/compte/detail/${id}`} />}>{nom}</Button>
+}
+
+function Etoile({ nbrEtoilePleine, nbrEtoileVide }: { nbrEtoilePleine: number, nbrEtoileVide: number }) {
+  const etoiles = []
+  for (let e = 0; e < nbrEtoilePleine; e++) {
+    etoiles.push(
+      <Star
+        key={e}
+        className={"fill-yellow-400 text-yellow-400"}
+      />
+    )
+
+  }
+  for (let e = 0; e < nbrEtoileVide; e++) {
+    etoiles.push(
+      <Star
+        key={`${e}Vide`}
+        className={""}
+      />
+    )
+  }
+
+  return (
+    <div className="flex">{etoiles}</div>
+  )
 }

@@ -22,7 +22,7 @@ import { useRouter } from "next/navigation";
 
 export function DevenirAdminComponant({ id_user }: {  id_user:string }) {
     const router = useRouter()
-    function rendreAdmin(){
+    function rendreAdmin(id_user:string){
         devenirAdmin(id_user)
         router.refresh()
     }
@@ -49,7 +49,7 @@ export function DevenirAdminComponant({ id_user }: {  id_user:string }) {
 
                                 <DialogFooter>
                                     <DialogClose render={<Button variant="outline">Annuler</Button>} />
-                                    <Button variant={"destructive"} onClick={() => { devenirAdmin(id_user) }} className="">Promouvoir</Button>
+                                    <Button variant={"destructive"} onClick={() => { rendreAdmin(id_user) }} className="">Promouvoir</Button>
                                 </DialogFooter>
 
                             </DialogContent>

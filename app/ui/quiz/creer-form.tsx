@@ -5,7 +5,7 @@ import {
 } from '@heroicons/react/24/outline';
 import { useForm, useFieldArray, Controller } from 'react-hook-form';
 import Select from 'react-select';
-import ajouterQuiz from '@/app/lib/action';
+import { ajouterQuiz, modifierQuiz } from '@/app/lib/action';
 import { Quiz } from '@/app/lib/definitions';
 import type { User } from '@supabase/supabase-js'
 import React from 'react';
@@ -23,12 +23,12 @@ const categoriesQuiz = [
   { label: "Animaux", value: "animaux" },
   { label: "Autre...", value: "autre" },]
 
-export default function QuizForm({ user }: { user: User | null }) {
+export default function QuizForm({ user, quizInitial }: { user: User | null; quizInitial?: Quiz }) {
 
   const router = useRouter()
-
+  const enModification = Boolean(quizInitial?.id)
   const { control, register, handleSubmit, formState: { errors } } = useForm<Quiz>({
-    defaultValues: {
+    defaultValues: quizInitial || {
       nomQuiz: '',
       imageURL: '',
       categorie: '',
@@ -47,13 +47,26 @@ export default function QuizForm({ user }: { user: User | null }) {
   const [estDoublon, setEstDoublon] = React.useState(false)
 
   const onSubmit = async (data: any) => {
-    if (!await ajouterQuiz(data, user?.id)) {
-      handleAffichage()
+    if (enModification) {
+      if (!await modifierQuiz(data, user?.id, quizInitial?.id)) {
+        handleAffichage()
 
+      }
+      else {
+        router.push('/')
+      }
     }
     else {
-      router.push('/')
+      if (!await ajouterQuiz(data, user?.id)) {
+        handleAffichage()
+
+      }
+      else {
+        router.push('/')
+      }
     }
+
+
 
   }
   const handleAffichage = () => {
@@ -88,7 +101,7 @@ export default function QuizForm({ user }: { user: User | null }) {
               )}
 
             </div>
-            <div className="mb-4">
+            {/* <div className="mb-4">
               <label className="mb-2 block text-lg font-medium text-black">
                 URL de l'image désiré
               </label>
@@ -99,7 +112,7 @@ export default function QuizForm({ user }: { user: User | null }) {
               placeholder:text-gray-500"
               />
 
-            </div>
+            </div> */}
             <div className="mb-4">
               <label className="mb-2 block text-lg font-medium text-black">
                 Choisir la catégorie du quiz

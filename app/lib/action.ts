@@ -5,7 +5,7 @@ import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation';
 
 
-export default async function ajouterQuiz(data: any, utilisateurId: any) {
+export async function ajouterQuiz(data: any, utilisateurId: any) {
   const supabase = await createClient();
   const nomQuiz = data.nomQuiz.trim()
   if (nomQuiz.length > 30 || nomQuiz.length < 1 ) {
@@ -33,6 +33,29 @@ export default async function ajouterQuiz(data: any, utilisateurId: any) {
         createur: utilisateurId
       }
     ])
+
+
+  return true
+
+
+}
+
+export async function modifierQuiz(data: any, utilisateurId: any, idQuiz: any) {
+  const supabase = await createClient();
+  const nomQuiz = data.nomQuiz.trim()
+
+  const { error } = await supabase
+    .schema('public')
+    .from('Quiz')
+    .update([
+      {
+        nomQuiz: nomQuiz,
+        imageURL: data.imageURL,
+        categorie: data.categorie,
+        questions: data.questions,
+      }
+    ])
+    .eq('id', idQuiz)
 
 
   return true
@@ -591,4 +614,23 @@ export async function fetchQuizPages(query: string) {
     console.error('Database Error:', error);
     throw new Error('Failed to fetch total number of invoices.');
   }
+}
+
+
+export async function obtenirQuizLesPlusRecent(){
+  const supabase = await createClient();
+
+  const { data: quiz, error } = await supabase
+    .schema('public')
+    .from('Quiz')
+    .select("*")
+    .order('id',{ascending:false})
+    .limit(4)
+  
+  return quiz
+  
+
+  
+
+
 }
